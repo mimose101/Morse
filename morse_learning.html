@@ -4532,7 +4532,7 @@
         function renderCharToMorse(area, q) {
             area.innerHTML = `
                 <div class="lesson-question-container">
-                    <div class="question-title">请输入字母 「 ${q.target} 」 的摩斯密码</div>
+                    <div class="question-title">请输入字母 <span style="white-space: nowrap;">「 ${q.target} 」</span> 的摩斯密码</div>
                     
                     <!-- 记忆联想叠加层，辅助记忆 -->
                     <div class="mnemonic-container">
@@ -4720,8 +4720,8 @@
 
             area.innerHTML = `
                 <div class="lesson-question-container">
-                    <div class="question-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        摩斯码 「 ${getMorseVisualHtml(q.morse)} 」 翻译后是哪一个字符？
+                    <div class="question-title">
+                        摩斯码 <span style="white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; vertical-align: middle;">「 ${getMorseVisualHtml(q.morse)} 」</span> 翻译后是哪一个字符？
                     </div>
                     <div class="options-grid">
                         ${optionsHtml}
