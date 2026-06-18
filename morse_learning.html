@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多邻国风格摩斯密码学习应用</title>
+    <title>摩斯密码学习应用</title>
     <!-- 引入高质感现代 Google 字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -282,7 +282,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 悬浮提示框 (类似于多邻国的小卡片) */
+        /* 悬浮提示框 (类似于关卡地图的悬浮小卡片) */
         .level-tooltip {
             position: absolute;
             background-color: var(--color-text-dark);
@@ -1104,6 +1104,1002 @@
         .feedback-incorrect .morse-visual-char {
             background-color: var(--color-red);
         }
+
+        /* ================= SCREEN: WELCOME (PORTAL) ================= */
+        #welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .welcome-hero-container {
+            width: 160px;
+            height: 160px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* 纯 CSS 3D 发报电键 */
+        .telegraph-machine {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .telegraph-machine:hover {
+            transform: scale(1.08);
+        }
+
+        .telegraph-base {
+            width: 90px;
+            height: 24px;
+            background: linear-gradient(135deg, #795548 0%, #4E342E 100%);
+            border-radius: 6px;
+            position: absolute;
+            bottom: 15px;
+            left: 5px;
+            box-shadow: 0 6px 0 #3E2723, 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .telegraph-arm {
+            width: 60px;
+            height: 10px;
+            background: linear-gradient(to right, #B0BEC5, #78909C);
+            position: absolute;
+            bottom: 35px;
+            left: 20px;
+            transform-origin: 10px 5px;
+            transform: rotate(-15deg);
+            border-radius: 3px;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+            animation: telegraph-bounce 3s ease-in-out infinite;
+        }
+
+        .telegraph-knob {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #37474F 0%, #212121 100%);
+            border-radius: 50%;
+            position: absolute;
+            right: -5px;
+            top: -12px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 3px 0 #1A1A1A, 0 5px 8px rgba(0,0,0,0.2);
+        }
+
+        .telegraph-ripple {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 2px dashed rgba(88, 204, 2, 0.4);
+            border-radius: 50%;
+            top: 10px;
+            left: 10px;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+            pointer-events: none;
+        }
+
+        @keyframes telegraph-bounce {
+            0%, 100% { transform: rotate(-12deg); }
+            50% { transform: rotate(-5deg); }
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.6); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        .welcome-title {
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--color-text-dark);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--color-text-dark) 30%, #58cc02 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .welcome-subtitle {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--color-text-light);
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        /* 欢迎页用户看板 */
+        .welcome-user-preview {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 20px;
+            padding: 16px 20px;
+            width: 100%;
+            max-width: 380px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--color-gray-border);
+            transition: transform 0.1s, box-shadow 0.1s, border-color 0.2s;
+        }
+
+        .welcome-user-preview:hover {
+            border-color: var(--color-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 var(--color-gray-border);
+        }
+
+        .welcome-user-preview:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-gray-border);
+        }
+
+        .user-preview-avatar {
+            font-size: 36px;
+            background-color: var(--color-bg-light);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--color-gray-border);
+        }
+
+        .user-preview-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .user-preview-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            margin-bottom: 4px;
+        }
+
+        .user-preview-stats {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--color-text-light);
+        }
+
+        .user-preview-arrow {
+            font-size: 20px;
+            color: var(--color-text-light);
+            transition: transform 0.2s;
+        }
+
+        .welcome-user-preview:hover .user-preview-arrow {
+            color: var(--color-blue);
+            transform: translateX(4px);
+        }
+
+        .welcome-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .welcome-buttons .duo-btn {
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 18px;
+        }
+
+        /* ================= SCREEN: CODEBOOK ================= */
+        #codebook-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .codebook-header, .profile-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--color-gray-border);
+            background-color: var(--color-white);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-home-btn {
+            background: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 12px;
+            width: 44px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--color-gray-border);
+            transition: transform 0.08s, box-shadow 0.08s;
+            margin-right: 16px;
+        }
+
+        .back-home-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 0px 0 var(--color-gray-border);
+        }
+
+        .codebook-title, .profile-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+        }
+
+        /* 搜索框与筛选 */
+        .codebook-search-container {
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--color-gray-border);
+            background-color: var(--color-white);
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            font-size: 16px;
+            color: var(--color-text-light);
+            pointer-events: none;
+        }
+
+        #codebook-search-input {
+            width: 100%;
+            height: 48px;
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 0 44px;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            background-color: var(--color-bg-light);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        #codebook-search-input:focus {
+            border-color: var(--color-blue);
+            background-color: var(--color-white);
+            box-shadow: 0 0 0 4px rgba(28, 176, 246, 0.12);
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: var(--color-text-light);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .search-clear-btn:hover {
+            color: var(--color-text-dark);
+        }
+
+        .codebook-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+
+        .codebook-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .codebook-tab {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 14px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--color-text-light);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .codebook-tab.active {
+            background-color: var(--color-blue);
+            color: var(--color-white);
+            border-color: var(--color-blue-dark);
+            box-shadow: 0 3px 0 var(--color-blue-dark);
+        }
+
+        .codebook-tab.active:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        /* 密码本卡片列表 */
+        .codebook-grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+            background-color: var(--color-bg-light);
+        }
+
+        .codebook-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 调整为3列等宽 */
+            gap: 10px;
+        }
+
+        .codebook-card {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 10px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--color-gray-border);
+            transition: transform 0.08s, box-shadow 0.08s, border-color 0.15s;
+            position: relative;
+            min-height: 140px; /* 容纳缩放后的联想记忆框和微型点划 */
+            overflow: hidden;
+        }
+
+        .codebook-card:hover {
+            border-color: var(--color-blue);
+        }
+
+        .codebook-card:active {
+            transform: translateY(3px);
+            box-shadow: 0 0px 0 var(--color-gray-border);
+        }
+
+        .codebook-card.playing {
+            border-color: var(--color-green);
+            background-color: #F1F8E9;
+            box-shadow: 0 3px 0 var(--color-green-dark);
+            transform: scale(0.97);
+        }
+
+        /* 密码本卡片内嵌入联想记忆框的缩放排版 */
+        .codebook-mnemonic-wrap {
+            width: 76.8px;
+            height: 76.8px;
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .codebook-mnemonic-wrap .mnemonic-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 240px;
+            transform: scale(0.32);
+            transform-origin: top left;
+            pointer-events: none; /* 卡片整体响应即可 */
+            border: none;
+            background: none;
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 对没有联想图的常用词卡片，采用整行跨列展示 */
+        .codebook-card.word-type {
+            grid-column: span 3; /* 跨满3列 */
+            min-height: 64px;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+        }
+
+        .codebook-card-char {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            margin-top: 4px;
+        }
+
+        .codebook-card.word-type .codebook-card-char {
+            font-size: 20px;
+            font-weight: 900;
+            margin-top: 0;
+        }
+
+        .codebook-card-morse {
+            margin-top: auto;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .codebook-card.word-type .codebook-card-morse {
+            margin-top: 0;
+            width: auto;
+            display: inline-flex;
+        }
+
+        /* 密码本卡片内微缩版 Visual Morse */
+        .codebook-card .morse-visual-char {
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .codebook-card .morse-visual-dot {
+            width: 6px;
+        }
+
+        .codebook-card .morse-visual-dash {
+            width: 16px;
+        }
+
+        .codebook-card .morse-visual-container {
+            gap: 3px;
+        }
+
+        .codebook-card-play {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            font-size: 10px;
+            color: var(--color-text-light);
+            background-color: var(--color-bg-light);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .codebook-card.word-type .codebook-card-play {
+            position: static;
+            margin-left: 8px;
+        }
+
+        .codebook-card.playing .codebook-card-play {
+            background-color: var(--color-green);
+            color: var(--color-white);
+        }
+
+        .codebook-empty { 
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px 0;
+            color: var(--color-text-light);
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        /* ================= SCREEN: PROFILE ================= */
+        #profile-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 40px;
+            background-color: var(--color-bg-light);
+        }
+
+        .profile-user-card {
+            background-color: var(--color-white);
+            border-bottom: 2px solid var(--color-gray-border);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-avatar-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-avatar {
+            font-size: 48px;
+            background-color: var(--color-bg-light);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--color-gray-border);
+            transition: transform 0.15s;
+        }
+
+        .profile-avatar-container:hover .profile-avatar {
+            transform: scale(1.05);
+        }
+
+        .avatar-edit-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--color-blue);
+            color: var(--color-white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            border: 2px solid var(--white);
+        }
+
+        .profile-username-container {
+            flex: 1;
+            text-align: left;
+        }
+
+        .profile-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .profile-name { 
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+        }
+
+        .username-edit-btn {
+            background: none;
+            border: none;
+            color: var(--color-blue);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .username-edit-btn:hover {
+            color: var(--color-blue-dark);
+        }
+
+        .profile-name-edit-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        #username-edit-input {
+            height: 36px;
+            border: 2px solid var(--color-blue);
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 16px;
+            font-weight: 800;
+            outline: none;
+            width: 140px;
+        }
+
+        .username-save-btn, .username-cancel-btn {
+            height: 36px;
+            width: 36px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .username-save-btn {
+            background-color: var(--color-green);
+            color: var(--color-white);
+        }
+
+        .username-cancel-btn {
+            background-color: var(--color-gray-border);
+            color: var(--color-text-dark);
+        }
+
+        .profile-join-date {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--color-text-light);
+        }
+
+        /* 统计看板 */
+        .profile-stats-title, .profile-badges-title {
+            padding: 20px 24px 10px 24px;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 24px;
+        }
+
+        .profile-stat-card {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-size: 20px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--color-text-dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--color-text-light);
+        }
+
+        /* 成就勋章 */
+        .profile-badges-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 0 24px;
+            margin-bottom: 24px;
+        }
+
+        .badge-item {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .badge-item.unlocked {
+            border-color: #B2FF59;
+            background: linear-gradient(135deg, var(--color-white) 70%, #F1F8E9 100%);
+        }
+
+        .badge-icon-wrapper {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            background-color: var(--color-bg-light);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            border: 2px solid var(--color-gray-border);
+        }
+
+        .badge-item.unlocked .badge-icon-wrapper {
+            background-color: #FFF9C4;
+            border-color: var(--color-yellow);
+        }
+
+        .badge-lock {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+            font-size: 12px;
+            background-color: var(--color-text-dark);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--color-white);
+        }
+
+        .badge-info {
+            flex: 1; 
+            text-align: left;
+        }
+
+        .badge-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            margin-bottom: 2px;
+        }
+
+        .badge-item.locked .badge-title {
+            color: var(--color-text-light);
+        }
+
+        .badge-desc {
+            font-size: 12px;
+            color: var(--color-text-light);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .badge-progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--color-bg-light);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .badge-progress-fill {
+            height: 100%;
+            background-color: var(--color-blue);
+            border-radius: 5px;
+        }
+
+        .badge-item.unlocked .badge-progress-fill { 
+            background-color: var(--color-green);
+        }
+
+        .badge-progress-text {
+            position: absolute;
+            right: 8px;
+            top: -2px;
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            line-height: 14px;
+        }
+
+        .profile-actions-container {
+            padding: 10px 24px;
+            margin-top: 10px;
+        }
+
+        /* ================= USER SWITCHER / CREATE ACCOUNT MODAL STYLES ================= */
+        .user-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .user-slot-card {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 3px 0 var(--color-gray-border);
+            transition: all 0.1s;
+        }
+
+        .user-slot-card:hover {
+            border-color: var(--color-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 var(--color-gray-border);
+        }
+
+        .user-slot-card:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .user-slot-card.active { 
+            border-color: var(--color-green);
+            background-color: #F1F8E9;
+            box-shadow: 0 3px 0 var(--color-green-dark);
+        }
+
+        .user-slot-avatar {
+            font-size: 24px;
+            background-color: var(--color-bg-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1.5px solid var(--color-gray-border);
+        }
+
+        .user-slot-info {
+            flex: 1;
+            text-align: left;
+            min-width: 0;
+        }
+
+        .user-slot-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-slot-xp {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--color-yellow-dark);
+        }
+
+        .user-slot-progress { 
+            font-size: 9px;
+            color: var(--color-text-light);
+            font-weight: 800;
+        }
+
+        .user-slot-active-badge {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            background-color: var(--color-green);
+            color: var(--color-white);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .user-slot-delete-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: var(--color-red);
+            color: var(--color-white);
+            border: 2px solid var(--color-white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        .user-slot-card:hover .user-slot-delete-btn {
+            display: flex;
+        } 
+
+        .user-slot-add {
+            border: 2px dashed var(--color-text-light);
+            box-shadow: none;
+            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+            background-color: var(--color-bg-light);
+        }
+
+        .user-slot-add:hover {
+            border-style: solid;
+            background-color: var(--color-white);
+        }
+
+        .user-slot-add-icon {
+            font-size: 20px;
+            color: var(--color-text-light);
+            font-weight: bold;
+        }
+
+        .user-slot-add-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--color-text-light);
+        }
+
+        .avatar-options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 8px;
+        }
+
+        .avatar-option-card {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 16px 0;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--color-gray-border);
+            transition: all 0.1s;
+        }
+
+        .avatar-option-card:hover {
+            border-color: var(--color-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 var(--color-gray-border);
+        }
+
+        .avatar-option-card.active {
+            border-color: var(--color-blue);
+            background-color: #E1F5FE;
+            box-shadow: 0 3px 0 var(--color-blue-dark);
+        }
+
+        .avatar-option-emoji { 
+            font-size: 32px;
+            text-align: center;
+        }
+
+        .new-avatar-option {
+            font-size: 28px;
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 12px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 0 var(--color-gray-border);
+            transition: all 0.1s;
+        }
+
+        .new-avatar-option.active {
+            border-color: var(--color-green);
+            background-color: #F1F8E9;
+            box-shadow: 0 2px 0 var(--color-green-dark);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -1112,6 +2108,7 @@
 
         <!-- 顶部导航状态栏 (只在 Home 界面及结果界面生效，学习界面有独立顶部栏) -->
         <div class="top-status-bar" id="app-status-bar">
+            <button class="back-home-btn" id="status-bar-back-btn" onclick="showScreen('welcome-screen')" style="margin-right: 8px; width: 36px; height: 36px; border-radius: 10px; font-size: 16px; display: none; align-items: center; justify-content: center; padding: 0;">🏠</button>
             <div class="status-item status-streak" title="连续学习天数">
                 <span class="status-icon">🔥</span>
                 <span id="streak-val">0</span>
@@ -1126,8 +2123,141 @@
             </div>
         </div>
 
+        <!-- ================= SCREEN: WELCOME (PORTAL) ================= -->
+        <div id="welcome-screen">
+            <div class="welcome-hero-container">
+                <div class="telegraph-machine">
+                    <div class="telegraph-base"></div>
+                    <div class="telegraph-arm">
+                        <div class="telegraph-knob"></div>
+                    </div>
+                    <div class="telegraph-ripple"></div>
+                </div>
+            </div>
+            
+            <h1 class="welcome-title">摩斯密码训练营</h1>
+            <p class="welcome-subtitle">趣味闯关，快速掌握摩斯电码</p>
+            
+            <div class="welcome-user-preview" onclick="showScreen('profile-screen')">
+                <div class="user-preview-avatar" id="welcome-avatar">🦉</div>
+                <div class="user-preview-info">
+                    <div class="user-preview-name" id="welcome-username">极客学员</div>
+                    <div class="user-preview-stats">累计经验：<span id="welcome-xp">0</span> XP</div>
+                </div>
+                <div class="user-preview-arrow">➔</div>
+            </div>
+            
+            <div class="welcome-buttons">
+                <button class="duo-btn duo-btn-green" onclick="showScreen('home-screen')">
+                    🚀 开始学习之旅
+                </button>
+                <button class="duo-btn duo-btn-blue" onclick="showScreen('codebook-screen')">
+                    📖 查阅密码本
+                </button>
+                <button class="duo-btn duo-btn-yellow" onclick="showScreen('profile-screen')">
+                    👤 个人档案与成就
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SCREEN: CODEBOOK ================= -->
+        <div id="codebook-screen" class="hidden">
+            <div class="codebook-header">
+                <button class="back-home-btn" onclick="showScreen('welcome-screen')" style="display: flex; align-items: center; justify-content: center; padding: 0;">🏠</button>
+                <div class="codebook-title">摩斯密码本</div>
+            </div>
+            
+            <div class="codebook-search-container">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="codebook-search-input" placeholder="输入英文字母、数字或摩斯码..." oninput="filterCodebook()">
+                    <button class="search-clear-btn hidden" id="search-clear-btn" onclick="clearSearchInput()">✖</button>
+                </div>
+                
+                <div class="codebook-tabs">
+                    <button class="codebook-tab active" onclick="switchCodebookTab('all', this)">全部</button>
+                    <button class="codebook-tab" onclick="switchCodebookTab('letter', this)">字母</button>
+                    <button class="codebook-tab" onclick="switchCodebookTab('number', this)">数字</button>
+                    <button class="codebook-tab" onclick="switchCodebookTab('word', this)">常用词</button>
+                </div>
+            </div>
+            
+            <div class="codebook-grid-container">
+                <div class="codebook-grid" id="codebook-grid-items">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCREEN: PROFILE ================= -->
+        <div id="profile-screen" class="hidden">
+            <div class="profile-header">
+                <button class="back-home-btn" onclick="showScreen('welcome-screen')" style="display: flex; align-items: center; justify-content: center; padding: 0;">🏠</button>
+                <div class="profile-title">个人档案</div>
+            </div>
+            
+            <div class="profile-user-card">
+                <div class="profile-avatar-container" onclick="openAvatarSelector()">
+                    <div class="profile-avatar" id="profile-avatar-display">🦉</div>
+                    <div class="avatar-edit-badge">✎</div>
+                </div>
+                <div class="profile-username-container">
+                    <div class="profile-name-row" id="username-display-row">
+                        <span class="profile-name" id="profile-username-val">极客学员</span>
+                        <button class="username-edit-btn" onclick="startEditUsername()">✎</button>
+                    </div>
+                    <div class="profile-name-edit-row hidden" id="username-edit-row">
+                        <input type="text" id="username-edit-input" maxlength="12" onkeydown="handleUsernameKeydown(event)">
+                        <button class="username-save-btn" onclick="saveEditedUsername()">✓</button>
+                        <button class="username-cancel-btn" onclick="cancelEditUsername()">✗</button>
+                    </div>
+                    <div class="profile-join-date">⏱ <span id="profile-join-date-val">2026-06-18</span> 加入训练营</div>
+                </div>
+            </div>
+            
+            <div class="profile-stats-title">学习数据统计</div>
+            <div class="profile-stats-grid">
+                <div class="profile-stat-card">
+                    <div class="stat-icon">✨</div>
+                    <div class="stat-value" id="profile-stat-xp">0</div>
+                    <div class="stat-label">累计经验</div>
+                </div>
+                <div class="profile-stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="profile-stat-streak">0</div>
+                    <div class="stat-label">连续天数</div>
+                </div>
+                <div class="profile-stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-value" id="profile-stat-max-streak">0</div>
+                    <div class="stat-label">最高连击</div>
+                </div>
+                <div class="profile-stat-card">
+                    <div class="stat-icon">👑</div>
+                    <div class="stat-value" id="profile-stat-perfect">0</div>
+                    <div class="stat-label">完美通关</div>
+                </div>
+                <div class="profile-stat-card" style="grid-column: span 2;">
+                    <div class="stat-icon">🗺️</div>
+                    <div class="stat-value" id="profile-stat-level">1 / 18</div>
+                    <div class="stat-label">关卡解锁进度</div>
+                </div>
+            </div>
+            
+            <div class="profile-badges-title">成就徽章</div>
+            <div class="profile-badges-container" id="profile-badges-items">
+                <!-- 动态生成 -->
+            </div>
+            
+            <div class="profile-actions-container">
+                <button class="duo-btn duo-btn-blue" onclick="openUserSwitcherModal()" style="width: 100%;">
+                    👥 切换用户 / 存档管理
+                </button>
+            </div>
+        </div>
+
         <!-- ================= SCREEN: HOME ================= -->
-        <div id="home-screen">
+        <div id="home-screen" class="hidden">
             <div class="map-title">摩斯密码学习地图</div>
             
             <div class="level-map-container" id="level-map-container">
@@ -1145,11 +2275,14 @@
                 <button class="duo-btn duo-btn-blue duo-btn-disabled" id="practice-all-btn">
                     🔒 通关第1关解锁综合练习
                 </button>
-                <div style="display: flex; gap: 8px; width: 100%;">
-                    <button class="duo-btn duo-btn-gray" onclick="showResetConfirmModal()" style="flex: 1; font-size: 13px; padding: 10px 8px;">
+                <div style="display: flex; gap: 8px; width: 100%; flex-wrap: wrap;">
+                    <button class="duo-btn duo-btn-gray" onclick="showResetConfirmModal()" style="flex: 1; min-width: 100px; font-size: 12px; padding: 10px 4px;">
                         ⚠️ 重置数据
                     </button>
-                    <button class="duo-btn duo-btn-gray" onclick="unlockAllLevelsCheat()" style="flex: 1; font-size: 13px; padding: 10px 8px; border-color: var(--color-blue); color: var(--color-blue);">
+                    <button class="duo-btn duo-btn-gray" onclick="lockAllLevelsCheat()" style="flex: 1; min-width: 110px; font-size: 12px; padding: 10px 4px; border-color: var(--color-red); color: var(--color-red);">
+                        🔒 恢复关卡锁定
+                    </button>
+                    <button class="duo-btn duo-btn-gray" onclick="unlockAllLevelsCheat()" style="flex: 1; min-width: 110px; font-size: 12px; padding: 10px 4px; border-color: var(--color-blue); color: var(--color-blue);">
                         🔓 解锁全部关卡
                     </button>
                 </div>
@@ -1798,7 +2931,11 @@
             { id: 11, name: "十一关：点起手长音", chars: ['P', 'W', 'J'], desc: "P (.--.)、W (.--) 与 J (.---)" },
             { id: 12, name: "十二关：难点收尾", chars: ['Q', 'X', 'Z'], desc: "Q (--.-)、X (-..-) 与 Z (--..)" },
             { id: 13, name: "十三关：基础数字", chars: ['1', '2', '3', '4', '5'], desc: "数字 1-5" },
-            { id: 14, name: "十四关：高位数字", chars: ['6', '7', '8', '9', '0'], desc: "数字 6-0" }
+            { id: 14, name: "十四关：高位数字", chars: ['6', '7', '8', '9', '0'], desc: "数字 6-0" },
+            { id: 15, name: "十五关：经典缩写", chars: ['SOS', 'OK', 'HI'], desc: "求救 SOS、确认 OK 与笑声 HI" },
+            { id: 16, name: "十六关：常用词汇 I", chars: ['THE', 'AND', 'YOU'], desc: "高频英语词汇 THE、AND、YOU" },
+            { id: 17, name: "十七关：经典问候", chars: ['HELLO', 'LOVE', 'BYE'], desc: "日常问候 HELLO、LOVE、BYE" },
+            { id: 18, name: "十八关：无线电密语", chars: ['CQ', '73', 'GL'], desc: "呼叫 CQ、美好祝愿 73 与好运 GL" }
         ];
 
         // ================= WEB AUDIO PLAYER =================
@@ -1851,6 +2988,9 @@
                         this.gainNode.gain.linearRampToValueAtTime(0, time + duration);
 
                         time += duration + intraGap;
+                    } else if (char === ' ') {
+                        // 单词中字母之间的停顿时间（额外增加 2 个基准时间间隔，连同 intraGap 构成标准字符停顿）
+                        time += (baseUnit * 2) / 1000;
                     }
                 }
 
@@ -1926,60 +3066,191 @@
             return html;
         }
 
-        // ================= GAME ENGINE STATE =================
+        // ================= CODEBOOK DICTIONARY =================
+        const codebookItems = [
+            { char: 'A', morse: '.-', type: 'letter' },
+            { char: 'B', morse: '-...', type: 'letter' },
+            { char: 'C', morse: '-.-.', type: 'letter' },
+            { char: 'D', morse: '-..', type: 'letter' },
+            { char: 'E', morse: '.', type: 'letter' },
+            { char: 'F', morse: '..-.', type: 'letter' },
+            { char: 'G', morse: '--.', type: 'letter' },
+            { char: 'H', morse: '....', type: 'letter' },
+            { char: 'I', morse: '..', type: 'letter' },
+            { char: 'J', morse: '.---', type: 'letter' },
+            { char: 'K', morse: '-.-', type: 'letter' },
+            { char: 'L', morse: '.-..', type: 'letter' },
+            { char: 'M', morse: '--', type: 'letter' },
+            { char: 'N', morse: '-.', type: 'letter' },
+            { char: 'O', morse: '---', type: 'letter' },
+            { char: 'P', morse: '.--.', type: 'letter' },
+            { char: 'Q', morse: '--.-', type: 'letter' },
+            { char: 'R', morse: '.-.', type: 'letter' },
+            { char: 'S', morse: '...', type: 'letter' },
+            { char: 'T', morse: '-', type: 'letter' },
+            { char: 'U', morse: '..-', type: 'letter' },
+            { char: 'V', morse: '...-', type: 'letter' },
+            { char: 'W', morse: '.--', type: 'letter' },
+            { char: 'X', morse: '-..-', type: 'letter' },
+            { char: 'Y', morse: '-.--', type: 'letter' },
+            { char: 'Z', morse: '--..', type: 'letter' },
+            { char: '1', morse: '.----', type: 'number' },
+            { char: '2', morse: '..---', type: 'number' },
+            { char: '3', morse: '...--', type: 'number' },
+            { char: '4', morse: '....-', type: 'number' },
+            { char: '5', morse: '.....', type: 'number' },
+            { char: '6', morse: '-....', type: 'number' },
+            { char: '7', morse: '--...', type: 'number' },
+            { char: '8', morse: '---..', type: 'number' },
+            { char: '9', morse: '----.', type: 'number' },
+            { char: '0', morse: '-----', type: 'number' },
+            { char: 'SOS', morse: '... --- ...', type: 'word' },
+            { char: 'OK', morse: '--- -.-', type: 'word' },
+            { char: 'HI', morse: '.... ..', type: 'word' },
+            { char: 'THE', morse: '- .... .', type: 'word' },
+            { char: 'AND', morse: '.- -. -..', type: 'word' },
+            { char: 'YOU', morse: '-.-- --- ..-', type: 'word' },
+            { char: 'HELLO', morse: '.... . .-.. .-.. ---', type: 'word' },
+            { char: 'LOVE', morse: '.-.. --- ...- .', type: 'word' },
+            { char: 'BYE', morse: '-... -.-- .', type: 'word' },
+            { char: 'CQ', morse: '-.-. --.-', type: 'word' },
+            { char: '73', morse: '--... ...--', type: 'word' },
+            { char: 'GL', morse: '--. .-..', type: 'word' }
+        ];
+
+        // ================= MULTI-USER DATA STATE =================
+        let users = [];
+        let currentUserId = '';
+
         let state = {
+            id: '',
             xp: 0,
             streak: 0,
-            unlockedLevel: 1, // 当前最高解锁的关卡 (1-14)
-            lastCompletedDate: null
+            maxStreak: 0,
+            unlockedLevel: 1,
+            lastCompletedDate: null,
+            username: "极客学员",
+            avatarId: 1,
+            joinDate: '',
+            perfectRounds: 0,
+            stats: {
+                audioCorrectCount: 0
+            }
         };
 
         // 当前关卡状态
         let currentLesson = {
-            id: null, // 关卡ID，为 0 代表综合练习
+            id: null,
             isPractice: false,
             charsPool: [],
-            queue: [], // 题目队列
-            wrongAnswers: new Set(), // 曾经答错的题目集合
+            queue: [],
+            wrongAnswers: new Set(),
             totalOriginalCount: 10,
             correctCount: 0,
             hearts: 5,
             maxHearts: 5,
             errorCount: 0,
             currentQuestion: null,
-            phase: 'preview', // 'preview' or 'question'
-            selectedOption: null, // 选择题用户选中的值
-            morseInput: '', // 输入题用户输入的值
-            selectedMatchLeft: null, // 配对题选中的左侧项索引
-            selectedMatchRight: null, // 配对题选中的右侧项索引
-            pairedLeft: new Set(), // 配对题已匹配的左侧索引集合
-            pairedRight: new Set() // 配对题已匹配的右侧索引集合
+            phase: 'preview',
+            selectedOption: null,
+            morseInput: '',
+            selectedMatchLeft: null,
+            selectedMatchRight: null,
+            pairedLeft: new Set(),
+            pairedRight: new Set()
         };
 
-        // ================= LOCAL STORAGE PERSISTENCE =================
-        function loadGameState() {
-            const savedState = localStorage.getItem('morse_game_state');
-            if (savedState) {
+        // ================= USER SYSTEM INITIALIZATION & PERSISTENCE =================
+        function initUserSystem() {
+            const savedUsers = localStorage.getItem('morse_game_users');
+            const savedCurrentId = localStorage.getItem('morse_current_user_id');
+            
+            if (savedUsers) {
                 try {
-                    state = JSON.parse(savedState);
+                    users = JSON.parse(savedUsers);
+                    currentUserId = savedCurrentId || users[0].id;
                 } catch(e) {
-                    console.error("加载存档失败", e);
+                    console.error("加载多用户数据失败", e);
                 }
             }
+            
+            // 老用户兼容无损升级逻辑
+            if (users.length === 0) {
+                const oldStateStr = localStorage.getItem('morse_game_state');
+                let oldState = null;
+                if (oldStateStr) {
+                    try { oldState = JSON.parse(oldStateStr); } catch(e){}
+                }
+                
+                const firstUser = {
+                    id: 'user_' + Date.now(),
+                    username: oldState ? (oldState.username || '极客学员') : '极客学员',
+                    avatarId: oldState ? (oldState.avatarId || 1) : 1,
+                    xp: oldState ? (oldState.xp || 0) : 0,
+                    streak: oldState ? (oldState.streak || 0) : 0,
+                    maxStreak: oldState ? (oldState.maxStreak || 0) : 0,
+                    unlockedLevel: oldState ? (oldState.unlockedLevel || 1) : 1,
+                    lastCompletedDate: oldState ? oldState.lastCompletedDate : null,
+                    joinDate: oldState ? (oldState.joinDate || new Date().toLocaleDateString('zh-CN')) : new Date().toLocaleDateString('zh-CN'),
+                    perfectRounds: oldState ? (oldState.perfectRounds || 0) : 0,
+                    stats: oldState ? (oldState.stats || { audioCorrectCount: 0 }) : { audioCorrectCount: 0 }
+                };
+                
+                users.push(firstUser);
+                currentUserId = firstUser.id;
+                
+                localStorage.setItem('morse_game_users', JSON.stringify(users));
+                localStorage.setItem('morse_current_user_id', currentUserId);
+            }
+            
+            loadActiveUserState();
+        }
+
+        function loadActiveUserState() {
+            const activeUser = users.find(u => u.id === currentUserId);
+            if (activeUser) {
+                state = { ...activeUser };
+            } else {
+                currentUserId = users[0].id;
+                state = { ...users[0] };
+            }
+            
             updateStatusHeader();
             checkPracticeUnlock();
+            
+            // 同步更新欢迎界面的微预览
+            const welcomeAvatar = document.getElementById('welcome-avatar');
+            if (welcomeAvatar) welcomeAvatar.textContent = getAvatarEmoji(state.avatarId);
+            const welcomeUsername = document.getElementById('welcome-username');
+            if (welcomeUsername) welcomeUsername.textContent = state.username;
+            const welcomeXp = document.getElementById('welcome-xp');
+            if (welcomeXp) welcomeXp.textContent = state.xp;
         }
 
         function saveGameState() {
+            const idx = users.findIndex(u => u.id === currentUserId);
+            if (idx !== -1) {
+                users[idx] = { ...state };
+            }
+            localStorage.setItem('morse_game_users', JSON.stringify(users));
+            localStorage.setItem('morse_current_user_id', currentUserId);
+            
             localStorage.setItem('morse_game_state', JSON.stringify(state));
+            
             updateStatusHeader();
             checkPracticeUnlock();
+            
+            const welcomeAvatar = document.getElementById('welcome-avatar');
+            if (welcomeAvatar) welcomeAvatar.textContent = getAvatarEmoji(state.avatarId);
+            const welcomeUsername = document.getElementById('welcome-username');
+            if (welcomeUsername) welcomeUsername.textContent = state.username;
+            const welcomeXp = document.getElementById('welcome-xp');
+            if (welcomeXp) welcomeXp.textContent = state.xp;
         }
 
         function updateStatusHeader() {
             document.getElementById('streak-val').textContent = state.streak;
             document.getElementById('xp-val').textContent = state.xp;
-            // 心显示为主页默认的3
             document.getElementById('hearts-val').textContent = 3;
         }
 
@@ -1996,8 +3267,571 @@
             }
         }
 
+        // ================= GLOBAL SCREEN MANAGEMENT =================
+        function showScreen(screenId) {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('codebook-screen').classList.add('hidden');
+            document.getElementById('profile-screen').classList.add('hidden');
+            document.getElementById('lesson-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            
+            document.getElementById(screenId).classList.remove('hidden');
+            
+            const statusBar = document.getElementById('app-status-bar');
+            if (['welcome-screen', 'home-screen', 'profile-screen'].includes(screenId)) {
+                statusBar.classList.remove('hidden');
+                updateStatusHeader();
+            } else {
+                statusBar.classList.add('hidden');
+            }
+            
+            const backBtn = document.getElementById('status-bar-back-btn');
+            if (screenId === 'home-screen' || screenId === 'profile-screen') {
+                if (backBtn) backBtn.style.display = 'flex';
+            } else {
+                if (backBtn) backBtn.style.display = 'none';
+            }
+            
+            if (screenId === 'home-screen') {
+                renderLevelMap();
+            }
+            
+            if (screenId === 'profile-screen') {
+                renderProfileScreen();
+            }
+            
+            if (screenId === 'codebook-screen') {
+                renderCodebook();
+            }
+        }
+
+        // ================= CODEBOOK LOGIC =================
+        let codebookFilterTab = 'all';
+        let codebookSearchQuery = '';
+
+        function switchCodebookTab(tab, btnDom) {
+            codebookFilterTab = tab;
+            
+            const tabs = document.querySelectorAll('.codebook-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            btnDom.classList.add('active');
+            
+            renderCodebook();
+        }
+
+        function filterCodebook() {
+            const input = document.getElementById('codebook-search-input');
+            codebookSearchQuery = input.value;
+            
+            const clearBtn = document.getElementById('search-clear-btn');
+            if (codebookSearchQuery) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            
+            renderCodebook();
+        }
+
+        function clearSearchInput() {
+            const input = document.getElementById('codebook-search-input');
+            input.value = '';
+            codebookSearchQuery = '';
+            document.getElementById('search-clear-btn').classList.add('hidden');
+            renderCodebook();
+        }
+
+        function renderCodebook() {
+            const grid = document.getElementById('codebook-grid-items');
+            grid.innerHTML = '';
+            
+            const filtered = codebookItems.filter(item => {
+                const matchesTab = (codebookFilterTab === 'all' || item.type === codebookFilterTab);
+                const query = codebookSearchQuery.trim().toLowerCase();
+                if (!query) return matchesTab;
+                
+                const matchesChar = item.char.toLowerCase().includes(query);
+                const matchesMorse = item.morse.includes(query);
+                return matchesTab && (matchesChar || matchesMorse);
+            });
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="codebook-empty">没有找到匹配的摩斯密码</div>`;
+                return;
+            }
+            
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'codebook-card';
+                card.id = `codebook-card-${item.char}`;
+                card.onclick = () => {
+                    playCodebookItem(item.char, item.morse);
+                };
+                
+                if (item.type === 'word') {
+                    // 单词类型：跨列通栏，不放图形，显示大字
+                    card.classList.add('word-type');
+                    card.innerHTML = `
+                        <div class="codebook-card-char">${item.char}</div>
+                        <div class="codebook-card-morse">${getMorseVisualHtml(item.morse)}</div>
+                        <div class="codebook-card-play">🔊</div>
+                    `;
+                } else {
+                    // 字母与数字类型：包含图形联想（嵌入了缩放容器中）
+                    card.innerHTML = `
+                        <div class="codebook-card-play">🔊</div>
+                        <div class="codebook-mnemonic-wrap">
+                            <div class="mnemonic-container">
+                                ${renderMnemonicSvg(item.char)}
+                            </div>
+                        </div>
+                        <div class="codebook-card-char">${item.char}</div>
+                        <div class="codebook-card-morse">${getMorseVisualHtml(item.morse)}</div>
+                    `;
+                }
+                grid.appendChild(card);
+            });
+        }
+
+        // 辅助在特定的卡片容器内寻找点划索引并精准高亮
+        function flashMnemonicElementsInContainer(containerDom, char, speedMultiplier = 1.0) {
+            let config = null;
+            const savedData = localStorage.getItem(`morse_pos_${char}`);
+            if (savedData) {
+                try { config = JSON.parse(savedData); } catch(e){}
+            }
+            if (!config) {
+                config = letterVisualConfigs[char];
+            }
+            if (!config) return;
+
+            const baseUnit = 80 * speedMultiplier;
+            const dotDuration = baseUnit;
+            const dashDuration = baseUnit * 3;
+            const intraGap = baseUnit;
+
+            let delay = 50;
+
+            config.forEach((elConfig, idx) => {
+                const duration = elConfig.type === 'dot' ? dotDuration : dashDuration;
+                
+                setTimeout(() => {
+                    const elDom = containerDom.querySelector(`[data-index="${idx}"]`);
+                    if (elDom) {
+                        elDom.classList.add('active-blink');
+                        setTimeout(() => {
+                            elDom.classList.remove('active-blink');
+                        }, duration);
+                    }
+                }, delay);
+
+                delay += duration + intraGap;
+            });
+        }
+
+        function playCodebookItem(char, morse) {
+            morsePlayer.play(morse, 1.0);
+            
+            const card = document.getElementById(`codebook-card-${char}`);
+            if (card) {
+                card.classList.add('playing');
+                // 让当前卡片内缩放的记忆点划进行顺序闪烁
+                flashMnemonicElementsInContainer(card, char);
+                
+                // 下方的微缩版 Visual Morse 同步亮起
+                const visualChars = card.querySelectorAll('.codebook-card-morse .morse-visual-char');
+                visualChars.forEach(vc => vc.classList.add('active-blink'));
+                
+                const baseUnit = 80;
+                let duration = 0;
+                for (let c of morse) {
+                    if (c === '.') duration += baseUnit;
+                    else if (c === '-') duration += baseUnit * 3;
+                    else if (c === ' ') duration += baseUnit * 3;
+                    duration += baseUnit;
+                }
+                
+                setTimeout(() => {
+                    card.classList.remove('playing');
+                    visualChars.forEach(vc => vc.classList.remove('active-blink'));
+                }, duration + 50);
+            }
+        }
+
+        // ================= AVATAR MAPPING =================
+        function getAvatarEmoji(avatarId) {
+            const avatars = {
+                1: '🦉',
+                2: '🐱',
+                3: '🦊',
+                4: '🦁',
+                5: '🐸',
+                6: '🐼'
+            };
+            return avatars[avatarId] || '🦉';
+        }
+
+        // ================= NICKNAME & PROFILE LOGIC =================
+        function startEditUsername() {
+            document.getElementById('username-display-row').classList.add('hidden');
+            document.getElementById('username-edit-row').classList.remove('hidden');
+            
+            const input = document.getElementById('username-edit-input');
+            input.value = state.username;
+            input.focus();
+        }
+
+        function cancelEditUsername() {
+            document.getElementById('username-display-row').classList.remove('hidden');
+            document.getElementById('username-edit-row').classList.add('hidden');
+        }
+
+        function saveEditedUsername() {
+            const input = document.getElementById('username-edit-input');
+            const newName = input.value.trim();
+            if (!newName) {
+                alert("昵称不能为空！");
+                return;
+            }
+            state.username = newName;
+            saveGameState();
+            cancelEditUsername();
+            renderProfileScreen();
+        }
+
+        function handleUsernameKeydown(e) {
+            if (e.key === 'Enter') {
+                saveEditedUsername();
+            } else if (e.key === 'Escape') {
+                cancelEditUsername();
+            }
+        }
+
+        function openAvatarSelector() {
+            const modal = document.getElementById('modal-container');
+            
+            let avatarsHtml = '';
+            for (let i = 1; i <= 6; i++) {
+                const emoji = getAvatarEmoji(i);
+                const isActive = (state.avatarId === i) ? 'active' : '';
+                avatarsHtml += `
+                    <div class="avatar-option-card ${isActive}" onclick="selectAvatar(${i})">
+                        <div class="avatar-option-emoji">${emoji}</div>
+                    </div>
+                `;
+            }
+            
+            modal.innerHTML = `
+                <div class="modal-box" style="max-width: 380px;">
+                    <div class="modal-title">更换头像</div>
+                    <div class="modal-desc">挑选一个你喜欢的吉祥物作为学习伙伴</div>
+                    <div class="avatar-options-grid">
+                        ${avatarsHtml}
+                    </div>
+                    <div class="modal-buttons" style="margin-top: 20px;">
+                        <button class="duo-btn duo-btn-gray" onclick="closeModal()">取消</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function selectAvatar(id) {
+            state.avatarId = id;
+            saveGameState();
+            closeModal();
+            renderProfileScreen();
+        }
+
+        // ================= BADGES DICTIONARY & SCREEN RENDER =================
+        const badgesConfig = [
+            {
+                id: 'first_steps',
+                title: '初出茅庐',
+                desc: '成功通关第一关',
+                icon: '🌱',
+                check: (s) => s.unlockedLevel > 1,
+                getProgress: (s) => s.unlockedLevel > 1 ? { cur: 1, max: 1 } : { cur: 0, max: 1 }
+            },
+            {
+                id: 'morse_master',
+                title: '电报大师',
+                desc: '成功解锁全部 18 个关卡',
+                icon: '🎓',
+                check: (s) => s.unlockedLevel >= 18,
+                getProgress: (s) => ({ cur: s.unlockedLevel - 1, max: 17 })
+            },
+            {
+                id: 'audio_master',
+                title: '声声入耳',
+                desc: '答题中累计答对 20 道听音辨字',
+                icon: '🎧',
+                check: (s) => (s.stats && s.stats.audioCorrectCount >= 20),
+                getProgress: (s) => ({ cur: (s.stats ? s.stats.audioCorrectCount : 0), max: 20 })
+            },
+            {
+                id: 'perfect_gold',
+                title: '金牌速记',
+                desc: '累计完成 5 次无错完美通关',
+                icon: '👑',
+                check: (s) => s.perfectRounds >= 5,
+                getProgress: (s) => ({ cur: s.perfectRounds, max: 5 })
+            },
+            {
+                id: 'on_fire',
+                title: '持之以恒',
+                desc: '连续学习天数达到 3 天',
+                icon: '🔥',
+                check: (s) => s.streak >= 3,
+                getProgress: (s) => ({ cur: s.streak, max: 3 })
+            }
+        ];
+
+        function renderProfileScreen() {
+            document.getElementById('profile-avatar-display').textContent = getAvatarEmoji(state.avatarId);
+            document.getElementById('profile-username-val').textContent = state.username;
+            document.getElementById('profile-join-date-val').textContent = state.joinDate || new Date().toLocaleDateString('zh-CN');
+            
+            document.getElementById('profile-stat-xp').textContent = state.xp;
+            document.getElementById('profile-stat-streak').textContent = state.streak;
+            document.getElementById('profile-stat-max-streak').textContent = state.maxStreak || state.streak;
+            document.getElementById('profile-stat-perfect').textContent = state.perfectRounds || 0;
+            document.getElementById('profile-stat-level').textContent = `${state.unlockedLevel} / ${levels.length}`;
+            
+            const container = document.getElementById('profile-badges-items');
+            container.innerHTML = '';
+            
+            badgesConfig.forEach(badge => {
+                const isUnlocked = badge.check(state);
+                const prog = badge.getProgress(state);
+                const pct = Math.min(100, Math.round((prog.cur / prog.max) * 100));
+                
+                const badgeDom = document.createElement('div');
+                badgeDom.className = `badge-item ${isUnlocked ? 'unlocked' : 'locked'}`;
+                
+                badgeDom.innerHTML = `
+                    <div class="badge-icon-wrapper">
+                        <span class="badge-icon">${badge.icon}</span>
+                        ${!isUnlocked ? '<span class="badge-lock">🔒</span>' : ''}
+                    </div>
+                    <div class="badge-info">
+                        <div class="badge-title">${badge.title}</div>
+                        <div class="badge-desc">${badge.desc}</div>
+                        <div class="badge-progress-container">
+                            <div class="badge-progress-fill" style="width: ${pct}%"></div>
+                            <div class="badge-progress-text">${prog.cur}/${prog.max}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(badgeDom);
+            });
+        }
+
+        // ================= USER SWITCHER LOGIC =================
+        function openUserSwitcherModal() {
+            const modal = document.getElementById('modal-container');
+            renderUserSwitcherInModal(modal);
+            modal.classList.remove('hidden');
+        }
+
+        function renderUserSwitcherInModal(modal) {
+            let slotsHtml = '';
+            
+            users.forEach(u => {
+                const isActive = (u.id === currentUserId) ? 'active' : '';
+                const avatar = getAvatarEmoji(u.avatarId);
+                const showDelete = (users.length > 1);
+                const deleteBtnHtml = showDelete ? `<button class="user-slot-delete-btn" onclick="confirmDeleteUser('${u.id}', event)">✖</button>` : '';
+                
+                slotsHtml += `
+                    <div class="user-slot-card ${isActive}" onclick="switchUser('${u.id}')">
+                        ${deleteBtnHtml}
+                        <div class="user-slot-avatar">${avatar}</div>
+                        <div class="user-slot-info">
+                            <div class="user-slot-name">${u.username}</div>
+                            <div class="user-slot-xp">${u.xp} XP</div>
+                            <div class="user-slot-progress">进度: ${u.unlockedLevel}/${levels.length}关</div>
+                        </div>
+                        ${u.id === currentUserId ? '<span class="user-slot-active-badge">✓</span>' : ''}
+                    </div>
+                `;
+            });
+            
+            const addSlotHtml = `
+                <div class="user-slot-card user-slot-add" onclick="showCreateUserForm()">
+                    <div class="user-slot-add-icon">+</div>
+                    <div class="user-slot-add-label">新建用户存档</div>
+                </div>
+            `;
+            
+            modal.innerHTML = `
+                <div class="modal-box" style="max-width: 440px;">
+                    <div class="modal-title">切换用户与存档管理</div>
+                    <div class="modal-desc">您可以在多位用户之间自由切换，或创建新的独立学习进度。</div>
+                    
+                    <div class="user-slots-grid" id="user-slots-container">
+                        ${slotsHtml}
+                        ${addSlotHtml}
+                    </div>
+                    
+                    <div class="modal-buttons" style="margin-top: 20px;">
+                        <button class="duo-btn duo-btn-gray" onclick="closeModal()">关闭</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchUser(userId) {
+            if (userId === currentUserId) return;
+            currentUserId = userId;
+            loadActiveUserState();
+            closeModal();
+            
+            renderProfileScreen();
+            renderLevelMap();
+            
+            alert(`👤 已成功切换到用户：${state.username}`);
+        }
+
+        function confirmDeleteUser(userId, event) {
+            event.stopPropagation();
+            const u = users.find(user => user.id === userId);
+            if (!u) return;
+            
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="modal-box" style="max-width: 380px;">
+                    <div class="modal-icon">⚠️</div>
+                    <div class="modal-title">确定删除该存档？</div>
+                    <div class="modal-desc">删除用户「 ${u.username} 」的存档将永久抹去其所有的 XP、关卡进度和徽章，且此操作不可撤销！</div>
+                    <div class="modal-buttons">
+                        <button class="duo-btn duo-btn-red" onclick="executeDeleteUser('${userId}')">确认彻底删除</button>
+                        <button class="duo-btn duo-btn-gray" onclick="openUserSwitcherModal()">取消</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function executeDeleteUser(userId) {
+            if (users.length <= 1) {
+                alert("无法删除：设备上必须保留至少一个用户存档！");
+                openUserSwitcherModal();
+                return;
+            }
+            
+            if (userId === currentUserId) {
+                const remaining = users.filter(u => u.id !== userId);
+                currentUserId = remaining[0].id;
+            }
+            
+            users = users.filter(u => u.id !== userId);
+            
+            localStorage.setItem('morse_game_users', JSON.stringify(users));
+            localStorage.setItem('morse_current_user_id', currentUserId);
+            
+            loadActiveUserState();
+            openUserSwitcherModal();
+            renderProfileScreen();
+            renderLevelMap();
+        }
+
+        let selectedNewAvatarId = 1;
+
+        function showCreateUserForm() {
+            selectedNewAvatarId = 1;
+            const modal = document.getElementById('modal-container');
+            
+            let avatarsHtml = '';
+            for (let i = 1; i <= 6; i++) {
+                const emoji = getAvatarEmoji(i);
+                const isActive = (i === 1) ? 'active' : '';
+                avatarsHtml += `
+                    <div class="new-avatar-option ${isActive}" id="new-avatar-${i}" onclick="selectNewUserAvatar(${i})">
+                        ${emoji}
+                    </div>
+                `;
+            }
+            
+            modal.innerHTML = `
+                <div class="modal-box" style="max-width: 400px;">
+                    <div class="modal-title">新建学习存档</div>
+                    <div class="modal-desc">为新的学习者配置个性的昵称和头像</div>
+                    
+                    <div style="margin-bottom: 20px; text-align: left;">
+                        <label style="font-weight: 800; font-size: 14px; color: var(--color-text-dark); display: block; margin-bottom: 8px;">用户昵称：</label>
+                        <input type="text" id="new-user-name-input" placeholder="输入昵称 (最多8个字)" maxlength="8" 
+                            style="width: 100%; height: 48px; border: 2px solid var(--color-gray-border); border-radius: 12px; padding: 0 16px; font-size: 16px; font-weight: 800; outline: none; transition: border-color 0.2s;"
+                            onfocus="this.style.borderColor='var(--color-blue)'"
+                            onblur="this.style.borderColor='var(--color-gray-border)'">
+                    </div>
+                    
+                    <label style="font-weight: 800; font-size: 14px; color: var(--color-text-dark); display: block; margin-bottom: 8px; text-align: left;">选择初始头像：</label>
+                    <div class="new-avatars-grid" style="display: flex; gap: 8px; justify-content: space-between; margin-bottom: 24px;">
+                        ${avatarsHtml}
+                    </div>
+                    
+                    <div class="modal-buttons">
+                        <button class="duo-btn duo-btn-green" onclick="executeCreateUser()">✓ 创建并登录</button>
+                        <button class="duo-btn duo-btn-gray" onclick="openUserSwitcherModal()">返回</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectNewUserAvatar(id) {
+            document.getElementById(`new-avatar-${selectedNewAvatarId}`).classList.remove('active');
+            selectedNewAvatarId = id;
+            document.getElementById(`new-avatar-${id}`).classList.add('active');
+        }
+
+        function executeCreateUser() {
+            const nameInput = document.getElementById('new-user-name-input');
+            let name = nameInput.value.trim();
+            if (!name) {
+                alert("请输入昵称！");
+                return;
+            }
+            
+            const newUser = {
+                id: 'user_' + Date.now(),
+                username: name,
+                avatarId: selectedNewAvatarId,
+                xp: 0,
+                streak: 0,
+                maxStreak: 0,
+                unlockedLevel: 1,
+                lastCompletedDate: null,
+                joinDate: new Date().toLocaleDateString('zh-CN'),
+                perfectRounds: 0,
+                stats: {
+                    audioCorrectCount: 0
+                }
+            };
+            
+            users.push(newUser);
+            currentUserId = newUser.id;
+            
+            localStorage.setItem('morse_game_users', JSON.stringify(users));
+            localStorage.setItem('morse_current_user_id', currentUserId);
+            
+            loadActiveUserState();
+            closeModal();
+            
+            renderProfileScreen();
+            renderLevelMap();
+            
+            alert(`🎉 恭喜！新存档「 ${name} 」已成功创建并登录！`);
+        }
+
         // ================= RENDERING: LEVEL MAP =================
         function renderLevelMap() {
+            // 动态根据关卡数量自适应拉长蜿蜒折线容器高度，保证间距永远合理
+            const container = document.getElementById('level-map-container');
+            if (container) {
+                container.style.minHeight = `${levels.length * 72}px`;
+            }
+
             const wrapper = document.getElementById('level-nodes-wrapper');
             wrapper.innerHTML = '';
 
@@ -2217,13 +4051,42 @@
 
         function generateOptions(target, mode) {
             const options = [target];
-            
-            // 严格只从已学字符中选择干扰项，不进行全局补充
             const learnedCandidates = currentLesson.learnedPool.filter(c => c !== target);
-            const shuffledLearned = shuffle([...learnedCandidates]);
-            for (let i = 0; i < shuffledLearned.length; i++) {
-                if (options.length >= 4) break;
-                options.push(shuffledLearned[i]);
+            
+            // 如果是单词，干扰项也应当全部为单词
+            if (target.length > 1) {
+                // 1. 优先从已学字符里的单词中选
+                const learnedWords = learnedCandidates.filter(c => c.length > 1);
+                const shuffledLearnedWords = shuffle([...learnedWords]);
+                shuffledLearnedWords.forEach(w => {
+                    if (options.length < 4) options.push(w);
+                });
+                
+                // 2. 如果不足4个，使用全局预设的所有单词做兜底，保持极佳的挑战性与合理性
+                if (options.length < 4) {
+                    const allWords = ['SOS', 'OK', 'HI', 'THE', 'AND', 'YOU', 'HELLO', 'LOVE', 'BYE', 'CQ', '73', 'GL'];
+                    const backups = shuffle(allWords.filter(w => w !== target && !options.includes(w)));
+                    backups.forEach(w => {
+                        if (options.length < 4) options.push(w);
+                    });
+                }
+            } else {
+                // 如果是单个字符，只从已解锁的单字符中提取干扰项，不进行任何全局兜底，确保早期关卡无混入
+                const learnedChars = learnedCandidates.filter(c => c.length === 1);
+                const shuffledLearned = shuffle([...learnedChars]);
+                for (let i = 0; i < shuffledLearned.length; i++) {
+                    if (options.length >= 4) break;
+                    options.push(shuffledLearned[i]);
+                }
+            }
+            
+            // 终极安全补齐（防止极少元素导致的不够4项）
+            if (options.length < 4) {
+                const fallbackGroup = target.length > 1 ? ['SOS', 'OK', 'HI', 'CQ'] : ['E', 'T', 'I', 'M'];
+                const secureBackups = shuffle(fallbackGroup.filter(b => b !== target && !options.includes(b)));
+                secureBackups.forEach(b => {
+                    if (options.length < 4) options.push(b);
+                });
             }
             
             return shuffle(options);
@@ -2325,8 +4188,12 @@
             }
 
             if (!config) {
-                // 如果没有视觉记忆图（比如数字），显示大号普通文本
-                return `<div class="mnemonic-letter-bg" style="color: #AFAFAF;">${char}</div>`;
+                // 如果没有视觉记忆图（比如数字、或者长度大于1的单词），自适应计算字号防止溢出
+                let fontSize = 120;
+                if (char.length > 1) {
+                    fontSize = Math.max(32, 120 - (char.length * 12));
+                }
+                return `<div class="mnemonic-letter-bg" style="color: #f0f1f4; font-size: ${fontSize}px; letter-spacing: 4px; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8), -1px -1px 0px rgba(0, 0, 0, 0.03);">${char}</div>`;
             }
 
             let elementsHtml = '';
@@ -2721,7 +4588,8 @@
             if (q.type === 'audio-to-char' || q.type === 'translation') {
                 isCorrect = (currentLesson.selectedOption === q.target);
             } else if (q.type === 'char-to-morse') {
-                isCorrect = (currentLesson.morseInput === q.morse);
+                // 如果是输入题，自动忽略比对时可能包含的空格（让单词输入答题也极顺畅）
+                isCorrect = (currentLesson.morseInput.replace(/\s+/g, '') === q.morse.replace(/\s+/g, ''));
             } else if (q.type === 'matching') {
                 isCorrect = true; // 配对连线在卡片层面已经异步核对，到这里直接通过
             }
@@ -2742,9 +4610,12 @@
                 title.textContent = "回答正确！";
                 msg.innerHTML = `字母 ${q.target} 的摩斯电码正是: ${getMorseVisualHtml(q.morse)}`;
 
-                // 只有非重练题才算进度
-                if (!currentLesson.wrongAnswers.has(q.target)) {
-                    currentLesson.correctCount++;
+                currentLesson.correctCount++;
+                
+                // 听音题累加正确总数以支持成就系统
+                if (q.type === 'audio-to-char') {
+                    if (!state.stats) state.stats = { audioCorrectCount: 0 };
+                    state.stats.audioCorrectCount = (state.stats.audioCorrectCount || 0) + 1;
                 }
             } else {
                 morsePlayer.playFeedbackSound(false);
@@ -2889,6 +4760,9 @@
             if (currentLesson.errorCount === 0) {
                 stars = 3;
                 xpGained = 20; // 完美奖励 5 XP
+                
+                // 增加完美通关次数
+                state.perfectRounds = (state.perfectRounds || 0) + 1;
             } else if (currentLesson.errorCount <= 2) {
                 stars = 2;
                 xpGained = 15;
@@ -2958,6 +4832,7 @@
                 }
             }
             state.streak = streak;
+            state.maxStreak = Math.max(state.maxStreak || 0, streak); // 更新历史最高连击
             state.lastCompletedDate = todayStr;
         }
 
@@ -2996,6 +4871,14 @@
             saveGameState();
             closeModal();
             renderLevelMap();
+        }
+
+        // 一键锁定关卡 (恢复出厂关卡锁定状态，保留 XP 和 Streak)
+        function lockAllLevelsCheat() {
+            state.unlockedLevel = 1;
+            saveGameState();
+            renderLevelMap();
+            alert("🔒 关卡锁定状态已恢复！已重新锁死 2-18 关。");
         }
 
         // 一键解锁全部关卡 (开发者调试通道)
@@ -3115,13 +4998,16 @@
 
         // ================= ON LOAD INITIALIZATION =================
         window.onload = () => {
-            loadGameState();
-            renderLevelMap();
+            initUserSystem();
+            showScreen('welcome-screen');
         };
 
         // 窗口拉伸时重新绘制地图连接线以保证精准对齐
         window.onresize = () => {
-            renderLevelMap();
+            const homeScreen = document.getElementById('home-screen');
+            if (homeScreen && !homeScreen.classList.contains('hidden')) {
+                renderLevelMap();
+            }
         };
 
     </script>
