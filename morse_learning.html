@@ -2410,49 +2410,112 @@
         
         .tap-telegraph-base {
             width: 200px;
-            height: 24px;
-            background: linear-gradient(135deg, #795548 0%, #4E342E 100%);
+            height: 28px;
+            background: linear-gradient(135deg, #5D4037 0%, #3E2723 100%);
             border-radius: 8px;
             position: absolute;
             bottom: 10px;
             left: 10px;
-            box-shadow: 0 6px 0 #3E2723, 0 10px 20px rgba(0,0,0,0.15);
-            border: 2px solid #5d3f35;
+            box-shadow: 0 6px 0 #2E1C19, 0 10px 20px rgba(0,0,0,0.2);
+            border: 2px solid #4E342E;
+        }
+
+        /* 支柱（金黄黄铜色） */
+        .tap-telegraph-pillar {
+            width: 20px;
+            height: 35px;
+            background: linear-gradient(to right, #FFE082, #FFB300, #FFA000);
+            position: absolute;
+            bottom: 34px;
+            left: 35px;
+            border-radius: 3px 3px 0 0;
+            box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4), 2px 2px 5px rgba(0,0,0,0.15);
+            border: 1.5px solid #FF8F00;
+        }
+
+        /* 回弹金属弹簧效果 */
+        .tap-telegraph-spring {
+            width: 16px;
+            height: 24px;
+            background: repeating-linear-gradient(
+                0deg,
+                #B0BEC5,
+                #B0BEC5 3px,
+                #78909C 3px,
+                #78909C 6px
+            );
+            position: absolute;
+            bottom: 34px;
+            left: 95px;
+            border-radius: 2px;
+            box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
+            border: 1px solid #546E7A;
+            transition: transform 0.05s ease;
+        }
+
+        /* 下金属触点 */
+        .tap-telegraph-contact {
+            width: 14px;
+            height: 10px;
+            background: linear-gradient(to right, #FFE082, #FFB300);
+            position: absolute;
+            bottom: 34px;
+            left: 165px;
+            border-radius: 2px 2px 0 0;
+            border: 1px solid #FF8F00;
         }
         
         .tap-telegraph-arm {
-            width: 130px;
-            height: 12px;
-            background: linear-gradient(to bottom, #cfd8dc, #90a4ae);
+            width: 140px;
+            height: 14px;
+            background: linear-gradient(to bottom, #FFFFFF 0%, #CFD8DC 30%, #90A4AE 70%, #78909C 100%);
             position: absolute;
-            bottom: 34px;
-            left: 30px;
-            transform-origin: 15px 6px;
+            bottom: 60px;
+            left: 35px;
+            transform-origin: 10px 7px;
             border-radius: 4px;
-            box-shadow: 0 2px 3px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
             transition: transform 0.05s ease;
+            z-index: 10;
         }
         
         .tap-telegraph-knob {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #37474F 0%, #212121 100%);
+            width: 44px;
+            height: 44px;
+            background: radial-gradient(circle at 35% 35%, #4B5563 0%, #1F2937 55%, #111827 100%);
             border-radius: 50%;
             position: absolute;
-            right: -8px;
-            top: -12px;
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.25), 0 3px 0 #1A1A1A, 0 6px 8px rgba(0,0,0,0.3);
+            right: -12px;
+            top: -15px;
+            box-shadow: 
+                inset 0 3px 6px rgba(255,255,255,0.3), 
+                0 4px 0 #111827, 
+                0 8px 12px rgba(0,0,0,0.25),
+                0 0 0 2px #90A4AE;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tap-telegraph-knob::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at 30% 30%, #FFE082, #FFB300);
+            border-radius: 50%;
+            border: 1px solid #FF8F00;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         
         .tap-telegraph-machine.pressed .tap-telegraph-arm {
-            transform: rotate(2.5deg);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transform: rotate(3.5deg);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
         }
         
-        .tap-telegraph-machine.pressed .tap-telegraph-knob {
-            transform: translateY(2px);
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 1px 0 #1A1A1A, 0 3px 4px rgba(0,0,0,0.2);
+        .tap-telegraph-machine.pressed .tap-telegraph-spring {
+            transform: scaleY(0.75);
+            transform-origin: bottom;
         }
         
         @media (max-height: 680px) {
@@ -5290,6 +5353,9 @@
                     <div class="telegraph-key-container">
                         <div class="tap-telegraph-machine" id="telegraph-tap-key">
                             <div class="tap-telegraph-base"></div>
+                            <div class="tap-telegraph-pillar"></div>
+                            <div class="tap-telegraph-spring"></div>
+                            <div class="tap-telegraph-contact"></div>
                             <div class="tap-telegraph-arm">
                                 <div class="tap-telegraph-knob"></div>
                             </div>
