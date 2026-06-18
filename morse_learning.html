@@ -2219,7 +2219,72 @@
             box-shadow: 0 2px 0 var(--color-green-dark);
             transform: scale(1.05);
         }
+
+        /* 答对粒子飞舞动效 */
+        @keyframes particle-fly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) scale(0.2);
+                opacity: 0;
+            }
+        }
+        .mini-particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+            animation: particle-fly 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        /* 答对连击 Combo 飘字 */
+        .combo-toast {
+            position: absolute;
+            top: 70px; /* 在进度条下方 */
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background: linear-gradient(135deg, #FF9600 0%, #FF5500 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 900;
+            box-shadow: 0 4px 15px rgba(255, 150, 0, 0.4);
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: combo-bounce 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes combo-bounce {
+            0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+            15% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+            25% { transform: translateX(-50%) scale(1); opacity: 1; }
+            75% { transform: translateX(-50%) scale(1); opacity: 1; }
+            100% { transform: translateX(-50%) scale(0.8) translateY(-20px); opacity: 0; }
+        }
+
+        /* 黄金完美通关特效 */
+        .perfect-title-glow {
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.4);
+            font-size: 32px;
+            font-weight: 900;
+            animation: gold-pulse 1.5s ease-in-out infinite alternate;
+            display: inline-block;
+        }
+
+        @keyframes gold-pulse {
+            0% { transform: scale(1); filter: brightness(1); }
+            100% { transform: scale(1.08); filter: brightness(1.2); }
+        }
     </style>
+    <style id="safe-area-insets-detection"></style>
 </head>
 <body>
 
@@ -3130,7 +3195,7 @@
                 }
             }
 
-            playFeedbackSound(isCorrect) {
+            playFeedbackSound(isCorrect, combo = 1) {
                 this.init();
                 const now = this.audioCtx.currentTime;
                 const osc = this.audioCtx.createOscillator();
@@ -3141,8 +3206,13 @@
 
                 if (isCorrect) {
                     // 答对：欢快的双音（880Hz -> 1174Hz）
-                    osc.frequency.setValueAtTime(880, now);
-                    osc.frequency.setValueAtTime(1174, now + 0.08);
+                    // 连击越高，音调加成越大，刺激多巴胺分泌
+                    const factor = Math.min(1.6, 1 + (combo - 1) * 0.05);
+                    const f1 = 880 * factor;
+                    const f2 = 1174 * factor;
+
+                    osc.frequency.setValueAtTime(f1, now);
+                    osc.frequency.setValueAtTime(f2, now + 0.08);
                     
                     gain.gain.setValueAtTime(0, now);
                     gain.gain.linearRampToValueAtTime(0.4, now + 0.01);
@@ -3167,6 +3237,64 @@
         }
 
         const morsePlayer = new MorsePlayer();
+
+        // 游戏化：发射答对彩屑粒子爆炸特效
+        function spawnCorrectParticles(element) {
+            if (!element) return;
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2 + window.scrollX;
+            const centerY = rect.top + rect.height / 2 + window.scrollY;
+            
+            // 产生 15 个彩色小粒子
+            const colors = ['#58CC02', '#1CB0F6', '#FFC800', '#FF4B4B', '#FF9600', '#B2FF59'];
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'mini-particle';
+                
+                const size = Math.random() * 8 + 6; 
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 定位在卡片中央
+                particle.style.left = `${centerX - size / 2}px`;
+                particle.style.top = `${centerY - size / 2}px`;
+                
+                // 向上向外飘落抛射
+                const angle = (Math.random() * 360) * Math.PI / 180;
+                const distance = Math.random() * 80 + 40; 
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance - 30; // 向上偏移模拟反重力爆炸
+                
+                particle.style.setProperty('--dx', `${dx}px`);
+                particle.style.setProperty('--dy', `${dy}px`);
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 600);
+            }
+        }
+
+        // 游戏化：在答题界面中央弹出 Combo 连击动画气泡
+        function showComboToast(comboCount) {
+            const oldToast = document.querySelector('.combo-toast');
+            if (oldToast) oldToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'combo-toast';
+            toast.innerHTML = `🔥 连击 X${comboCount}`;
+            
+            const lessonScreen = document.getElementById('lesson-screen');
+            if (lessonScreen) {
+                lessonScreen.appendChild(toast);
+            }
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 1000);
+        }
 
         // 渲染高质感图形化点划组件 (Visual Morse)
         function getMorseVisualHtml(morseCode) {
@@ -4078,6 +4206,7 @@
             currentLesson.correctCount = 0;
             currentLesson.errorCount = 0;
             currentLesson.wrongAnswers.clear();
+            currentLesson.combo = 0; // 重置连击
 
             // 生成10道题的队列
             generateQuestionsQueue();
@@ -4675,6 +4804,10 @@
                 lCard.className = "match-card paired";
                 rCard.className = "match-card paired";
 
+                // 配对爆炸特效
+                spawnCorrectParticles(lCard);
+                spawnCorrectParticles(rCard);
+
                 currentLesson.pairedLeft.add(leftIdx);
                 currentLesson.pairedRight.add(rightIdx);
 
@@ -4754,7 +4887,12 @@
             row.style.display = 'flex';
 
             if (isCorrect) {
-                morsePlayer.playFeedbackSound(true);
+                if (typeof currentLesson.combo === 'undefined') currentLesson.combo = 0;
+                currentLesson.combo++;
+
+                // 播放带连击变调的反馈音效
+                morsePlayer.playFeedbackSound(true, currentLesson.combo);
+
                 footer.className = "lesson-footer-panel feedback-correct";
                 icon.textContent = "✓";
                 title.textContent = "回答正确！";
@@ -4767,7 +4905,25 @@
                     if (!state.stats) state.stats = { audioCorrectCount: 0 };
                     state.stats.audioCorrectCount = (state.stats.audioCorrectCount || 0) + 1;
                 }
+
+                // ---- 游戏化特效：连击飘字与粒子爆炸 ----
+                if (currentLesson.combo >= 2) {
+                    showComboToast(currentLesson.combo);
+                }
+                
+                let triggerDom = null;
+                if (q.type === 'audio-to-char' || q.type === 'translation') {
+                    triggerDom = document.getElementById(`opt-${q.target}`);
+                } else if (q.type === 'char-to-morse') {
+                    triggerDom = document.getElementById('morse-input-display');
+                }
+                if (!triggerDom) {
+                    triggerDom = document.getElementById('lesson-body-area');
+                }
+                spawnCorrectParticles(triggerDom);
             } else {
+                currentLesson.combo = 0; // 连击清零
+
                 morsePlayer.playFeedbackSound(false);
                 footer.className = "lesson-footer-panel feedback-incorrect";
                 icon.textContent = "✗";
@@ -4948,7 +5104,11 @@
             const rawAccuracy = ((currentLesson.totalOriginalCount) / (currentLesson.totalOriginalCount + currentLesson.errorCount)) * 100;
             document.getElementById('result-accuracy').textContent = `${Math.round(rawAccuracy)}%`;
             
-            document.getElementById('result-main-title').textContent = currentLesson.isPractice ? "温习完成！" : "关卡通过！";
+            if (!currentLesson.isPractice && currentLesson.errorCount === 0) {
+                document.getElementById('result-main-title').innerHTML = `<span class="perfect-title-glow">👑 完美通关 👑</span>`;
+            } else {
+                document.getElementById('result-main-title').textContent = currentLesson.isPractice ? "温习完成！" : "关卡通过！";
+            }
 
             // 渲染星星动画
             const starNodes = document.querySelectorAll('.result-star');
