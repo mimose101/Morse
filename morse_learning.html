@@ -494,22 +494,23 @@
         .mnemonic-container {
             width: 300px;
             height: 300px;
-            background-color: #FAFAFA;
-            border: 2px dashed var(--color-gray-border);
-            border-radius: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f6f8 100%);
+            border: 2px solid #eaeaea;
+            border-radius: 28px;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 24px;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+            margin: 0 auto 24px auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03), inset 0 2px 5px rgba(255, 255, 255, 0.6);
         }
 
         .mnemonic-letter-bg {
             font-family: 'Roboto', 'Arial Black', sans-serif;
             font-size: 200px;
             font-weight: 900;
-            color: #EAEAEA;
+            color: #f0f1f4;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8), -1px -1px 0px rgba(0, 0, 0, 0.03);
             line-height: 1;
             z-index: 1;
             /* 关键：让子元素（点划）的百分比坐标相对于字母文字本身，与编辑器一致 */
@@ -518,17 +519,18 @@
 
         .m-element {
             position: absolute;
-            background-color: #3C3C3C;
-            border: 3px solid var(--color-white);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            background: linear-gradient(135deg, #4d4d4d 0%, #222222 100%);
+            border: 2px solid var(--color-white);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.08);
             z-index: 2;
             cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.1s ease, box-shadow 0.1s ease;
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .m-element:hover {
-            background-color: var(--color-blue);
-            transform: scale(1.1);
+            background: linear-gradient(135deg, #28b8f8 0%, #0087d1 100%);
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12), 0 12px 20px rgba(28, 176, 246, 0.2);
         }
 
         .m-dot {
@@ -540,14 +542,15 @@
         .m-dash {
             width: 30px;
             height: 80px;
-            border-radius: 4px;
+            border-radius: 12px;
         }
 
         /* 闪烁状态的亮绿色发光样式 */
         .m-element.active-blink {
-            background-color: var(--color-green) !important;
-            box-shadow: 0 0 20px var(--color-green) !important;
+            background: linear-gradient(135deg, #7be11a 0%, #58cc02 100%) !important;
+            box-shadow: 0 0 20px rgba(88, 204, 2, 0.8), 0 4px 0 #46a302 !important;
             border-color: var(--color-white) !important;
+            transform: scale(1.05);
         }
 
         /* ================= SCREEN: LESSON CARD PHASES ================= */
@@ -597,26 +600,7 @@
             box-shadow: 0 0px 0 var(--color-blue-dark);
         }
 
-        .audio-play-btn-slow {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: var(--color-yellow);
-            border: none;
-            color: var(--color-white);
-            font-size: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 6px 0 var(--color-yellow-dark);
-            transition: transform 0.05s, box-shadow 0.05s;
-        }
 
-        .audio-play-btn-slow:active {
-            transform: translateY(6px);
-            box-shadow: 0 0px 0 var(--color-yellow-dark);
-        }
 
         /* 多选一网格 */
         .options-grid {
@@ -671,44 +655,85 @@
 
         /* 题型 2: 输入摩斯码 */
         .input-code-display {
-            min-height: 60px;
-            border-bottom: 2px dashed var(--color-gray-border);
+            min-height: 72px;
+            background-color: var(--color-bg-light);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 20px;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 36px;
+            margin-bottom: 32px;
+            padding: 12px 24px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.03);
+        }
+
+        .input-code-display.has-content {
+            background-color: var(--color-white);
+            border-color: var(--color-blue);
+            box-shadow: 0 0 0 4px rgba(28, 176, 246, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.01);
+        }
+
+        .display-placeholder {
+            font-size: 16px;
             font-weight: 800;
-            color: var(--color-blue);
-            letter-spacing: 6px;
-            margin-bottom: 40px;
+            color: var(--color-text-light);
+            letter-spacing: 0.5px;
         }
 
         .morse-input-panel {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             width: 100%;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            padding: 0 8px;
         }
 
-        .morse-input-btn {
+        .morse-input-btn, .morse-backspace-btn {
             flex: 1;
-            max-width: 120px;
-            height: 70px;
-            font-size: 32px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+            padding: 8px 0;
+            max-width: 130px;
         }
 
-        .morse-backspace-btn {
-            width: 70px;
-            height: 70px;
-            font-size: 20px;
+        .morse-input-btn .btn-symbol, .morse-backspace-btn .btn-symbol {
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .morse-backspace-btn .btn-symbol {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .btn-label {
+            font-size: 12px;
+            font-weight: 800;
+            opacity: 0.85;
+            letter-spacing: 0.5px;
+        }
+
+        .duo-btn-blue .btn-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .duo-btn-gray .btn-label {
+            color: var(--color-text-light);
         }
 
         .keyboard-hint {
             font-size: 13px;
             color: var(--color-text-light);
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
         }
 
@@ -731,7 +756,10 @@
             background-color: var(--color-white);
             border: 2px solid var(--color-gray-border);
             border-radius: 12px;
-            padding: 12px 16px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
             font-weight: 800;
             text-align: center;
@@ -1565,15 +1593,15 @@
             "R": [
                 {
                     "type": "dot",
-                    "left": 22,
-                    "top": 73,
+                    "left": 21,
+                    "top": 28,
                     "rotate": 0
                 },
                 {
                     "type": "dash",
-                    "left": 41,
-                    "top": 52,
-                    "rotate": -90
+                    "left": 22,
+                    "top": 60,
+                    "rotate": -180
                 },
                 {
                     "type": "dot",
@@ -2119,17 +2147,31 @@
         function generateQuestionsQueue() {
             currentLesson.queue = [];
             
+            // 1. 首先，将本关卡的所有待学字符，强行各生成一道“char-to-morse”（输入摩斯码）题型
+            // 并把它们打乱顺序后排在队列的最前头
+            const mustMorseChars = shuffle([...currentLesson.charsPool]);
+            mustMorseChars.forEach(targetChar => {
+                currentLesson.queue.push({
+                    type: 'char-to-morse',
+                    target: targetChar,
+                    morse: morseData[targetChar]
+                });
+            });
+
+            // 2. 补齐剩下的题目至 10 道
+            const remainingCount = Math.max(0, 10 - currentLesson.queue.length);
+            
             // 题型列表。如果已学字符不足 4 个，剔除连线匹配题，避免选项无法凑齐
             let types = ['audio-to-char', 'char-to-morse', 'matching', 'translation'];
             if (currentLesson.learnedPool.length < 4) {
                 types = ['audio-to-char', 'char-to-morse', 'translation'];
             }
             
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < remainingCount; i++) {
                 // 随机选一道题型
                 let randType = types[Math.floor(Math.random() * types.length)];
                 
-                // 数字关卡（13、14关）不提供配对连线和听力发音（只考输入和翻译，防止音频数据解析错误）
+                // 数字关卡（13、14关）不提供配对连线 and 听力发音（只考输入和翻译，防止音频数据解析错误）
                 const isNumberLevel = currentLesson.charsPool.some(c => !isNaN(c));
                 if (isNumberLevel) {
                     randType = Math.random() > 0.5 ? 'char-to-morse' : 'translation';
@@ -2156,9 +2198,9 @@
                     // 优先从已学字符中补充其他字母以凑满 4 个
                     const learnedCandidates = currentLesson.learnedPool.filter(c => !pool.includes(c));
                     const shuffledLearned = shuffle([...learnedCandidates]);
-                    for (let i = 0; i < shuffledLearned.length; i++) {
+                    for (let j = 0; j < shuffledLearned.length; j++) {
                         if (pool.length >= 4) break;
-                        pool.push(shuffledLearned[i]);
+                        pool.push(shuffledLearned[j]);
                     }
                     
                     // 取前4个并打乱
@@ -2169,6 +2211,7 @@
 
                 currentLesson.queue.push(q);
             }
+
             currentLesson.totalOriginalCount = currentLesson.queue.length;
         }
 
@@ -2416,6 +2459,9 @@
             // 播放音频（如果是听力题，自动响一次）
             if (q.type === 'audio-to-char') {
                 setTimeout(() => morsePlayer.play(q.morse, 1.0), 300);
+            } else if (q.type === 'char-to-morse') {
+                // 如果是输入摩斯码题，自动播放一次记忆卡片点划闪烁和对应音频
+                setTimeout(() => playMorseSoundWithFlash(q.target), 400);
             }
         }
 
@@ -2436,8 +2482,7 @@
                     <div class="question-title">听电报声音，选择对应的字母</div>
                     
                     <div class="audio-buttons-row">
-                        <button class="audio-play-btn" onclick="playMorseSound('${q.morse}')" title="正常播放 (Space)">🔊</button>
-                        <button class="audio-play-btn-slow" onclick="morsePlayer.play('${q.morse}', 1.6)" title="慢速播放 (S)">🐢</button>
+                        <button class="audio-play-btn" onclick="playMorseSound('${q.morse}')" title="播放电报 (Space)">🔊</button>
                     </div>
 
                     <div class="options-grid">
@@ -2480,9 +2525,22 @@
                     <div class="input-code-display" id="morse-input-display">...</div>
 
                     <div class="morse-input-panel">
-                        <button class="duo-btn duo-btn-blue morse-input-btn" onclick="pressMorseChar('.')">· (嘀)</button>
-                        <button class="duo-btn duo-btn-blue morse-input-btn" onclick="pressMorseChar('-')">− (哒)</button>
-                        <button class="duo-btn duo-btn-gray morse-backspace-btn" onclick="pressBackspace()">⌫</button>
+                        <button class="duo-btn duo-btn-blue morse-input-btn" onclick="pressMorseChar('.')">
+                            <span class="btn-symbol">
+                                <span class="morse-visual-char morse-visual-dot" style="background-color: white; width: 14px; height: 14px; border-radius: 50%; display: inline-block;"></span>
+                            </span>
+                            <span class="btn-label">嘀</span>
+                        </button>
+                        <button class="duo-btn duo-btn-blue morse-input-btn" onclick="pressMorseChar('-')">
+                            <span class="btn-symbol">
+                                <span class="morse-visual-char morse-visual-dash" style="background-color: white; width: 36px; height: 12px; border-radius: 6px; display: inline-block;"></span>
+                            </span>
+                            <span class="btn-label">哒</span>
+                        </button>
+                        <button class="duo-btn duo-btn-gray morse-backspace-btn" onclick="pressBackspace()">
+                            <span class="btn-symbol">⌫</span>
+                            <span class="btn-label">退格</span>
+                        </button>
                     </div>
                     <div class="keyboard-hint">快捷键：键盘 [ . ] 输入点， [ - ] 输入划， [ Backspace ] 退格， [ Enter ] 提交</div>
                 </div>
@@ -2496,6 +2554,8 @@
                 currentLesson.morseInput += ch;
                 updateInputDisplay();
                 enableCheckButton();
+                // 伴随播放对应点/划的嘀哒音效
+                playMorseUnit(ch === '.' ? 'dot' : 'dash');
             }
         }
 
@@ -2512,9 +2572,11 @@
         function updateInputDisplay() {
             const display = document.getElementById('morse-input-display');
             if (currentLesson.morseInput) {
+                display.classList.add('has-content');
                 display.innerHTML = getMorseVisualHtml(currentLesson.morseInput);
             } else {
-                display.textContent = '请输入';
+                display.classList.remove('has-content');
+                display.innerHTML = '<span class="display-placeholder">等待输入摩斯码...</span>';
             }
         }
 
@@ -2532,7 +2594,7 @@
             let rightHtml = '';
             q.rightItems.forEach((item, idx) => {
                 rightHtml += `
-                    <div class="match-card" id="match-r-${idx}" onclick="selectMatchItem(${idx}, 'right')" style="display: flex; justify-content: center; align-items: center; min-height: 48px;">
+                    <div class="match-card" id="match-r-${idx}" onclick="selectMatchItem(${idx}, 'right')">
                         ${getMorseVisualHtml(item.morse)}
                     </div>
                 `;
@@ -2690,6 +2752,12 @@
                 icon.textContent = "✗";
                 title.textContent = "回答错误！";
                 msg.innerHTML = `正确答案是 ${q.target} : ${getMorseVisualHtml(q.morse)}`;
+
+                // 如果是输入题，答错后立即自动清空已输入内容
+                if (q.type === 'char-to-morse') {
+                    currentLesson.morseInput = '';
+                    updateInputDisplay();
+                }
 
                 // 自动播放正确答案的发音，并在输入题的记忆图案中同步发光闪烁
                 setTimeout(() => {
@@ -2948,14 +3016,10 @@
             const q = currentLesson.currentQuestion;
             if (!q) return;
 
-            // 空格键/S键：播放音频（限听音辨字）
+            // 空格键：播放音频（限听音辨字）
             if (q.type === 'audio-to-char' && e.code === 'Space') {
                 e.preventDefault();
                 playMorseSound(q.morse);
-            }
-            if (q.type === 'audio-to-char' && e.key.toLowerCase() === 's') {
-                e.preventDefault();
-                morsePlayer.play(q.morse, 1.6);
             }
 
             // 数字键选择选项 (1-4)
