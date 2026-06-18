@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>摩斯密码学习应用</title>
     <!-- 引入高质感现代 Google 字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,10 +38,11 @@
             background-color: var(--color-bg-light);
             color: var(--color-text-dark);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: stretch;
-            overflow-x: hidden;
+            overflow: hidden; /* 防止桌面或老设备页面全局滚动 */
         }
 
         /* 应用主体，限制最大宽度以适配手机和桌面居中 */
@@ -49,11 +50,13 @@
             width: 100%;
             max-width: 540px;
             background-color: var(--color-white);
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
             position: relative;
+            overflow: hidden; /* 所有页面内容都在容器内部自主滚动 */
         }
 
         /* 隐藏元素的类 */
@@ -147,11 +150,12 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 24px;
+            padding-top: calc(16px + env(safe-area-inset-top, 0px));
             border-bottom: 2px solid var(--color-gray-border);
             background-color: var(--color-white);
-            position: sticky;
-            top: 0;
+            position: relative;
             z-index: 100;
+            flex-shrink: 0;
         }
 
         .status-item {
@@ -175,7 +179,9 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding-bottom: 40px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
         }
 
         .map-title {
@@ -184,6 +190,7 @@
             font-weight: 800;
             margin: 24px 0 10px 0;
             color: var(--color-text-dark);
+            flex-shrink: 0;
         }
 
         /* 蜿蜒关卡地图容器 */
@@ -321,10 +328,12 @@
         /* 底部操作区 */
         .home-footer {
             padding: 10px 24px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-top: auto;
+            flex-shrink: 0;
         }
 
         /* ================= SCREEN: LESSON ================= */
@@ -340,8 +349,11 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 24px;
+            padding-top: calc(16px + env(safe-area-inset-top, 0px));
             gap: 16px;
             border-bottom: 2px solid var(--color-gray-border);
+            background-color: var(--color-white);
+            flex-shrink: 0;
         }
 
         .close-btn {
@@ -406,6 +418,8 @@
             justify-content: center;
             align-items: center;
             width: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* ================= SUB-PHASE: PREVIEW ================= */
@@ -838,12 +852,14 @@
         /* ================= FOOTER CONTROL PANEL (DUOLINGO FEEDBACK) ================= */
         .lesson-footer-panel {
             padding: 24px;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
             border-top: 2px solid var(--color-gray-border);
             background-color: var(--color-white);
             display: flex;
             flex-direction: column;
             gap: 16px;
             transition: background-color 0.2s ease;
+            flex-shrink: 0;
         }
 
         .feedback-row {
@@ -940,7 +956,11 @@
             align-items: center;
             justify-content: center;
             padding: 40px 24px;
+            padding-top: calc(40px + env(safe-area-inset-top, 0px));
+            padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
             text-align: center;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .canvas-container {
@@ -1309,10 +1329,23 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100%;
         }
 
-        .codebook-header, .profile-header {
+        .codebook-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            padding-top: calc(16px + env(safe-area-inset-top, 0px));
+            border-bottom: 2px solid var(--color-gray-border);
+            background-color: var(--color-white);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .profile-header {
             display: flex;
             align-items: center;
             padding: 16px 24px;
@@ -1321,6 +1354,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            flex-shrink: 0;
         }
 
         .back-home-btn {
@@ -1449,7 +1483,9 @@
         .codebook-grid-container {
             flex: 1;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             padding: 20px 16px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
             background-color: var(--color-bg-light);
         }
 
@@ -1614,8 +1650,85 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding-bottom: 40px;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
             background-color: var(--color-bg-light);
+        }
+
+        /* 矮屏手机适配 (例如 iPhone SE, 较矮的分辨率) */
+        @media (max-height: 680px) {
+            .welcome-hero-container {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 10px;
+            }
+            .telegraph-machine {
+                transform: scale(0.8);
+            }
+            .telegraph-machine:hover {
+                transform: scale(0.85);
+            }
+            .welcome-title {
+                font-size: 24px;
+            }
+            .welcome-subtitle {
+                margin-bottom: 15px;
+            }
+            .welcome-user-preview {
+                margin-bottom: 15px;
+                padding: 10px 14px;
+            }
+            .welcome-buttons {
+                gap: 8px;
+            }
+            .welcome-buttons .duo-btn {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            .mnemonic-container {
+                width: 200px;
+                height: 200px;
+                margin-bottom: 12px;
+            }
+            .mnemonic-letter-bg {
+                font-size: 130px;
+            }
+            .m-dot {
+                width: 20px;
+                height: 20px;
+            }
+            .m-dash {
+                width: 20px;
+                height: 52px;
+            }
+            .option-card {
+                padding: 12px 8px;
+                font-size: 18px;
+            }
+            .question-title {
+                margin-bottom: 12px;
+                font-size: 18px;
+            }
+            .audio-play-btn {
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+            }
+            .morse-input-panel {
+                margin-bottom: 10px;
+            }
+            .morse-input-btn, .morse-backspace-btn {
+                height: 64px;
+            }
+            .input-code-display {
+                min-height: 56px;
+                margin-bottom: 16px;
+                padding: 8px 16px;
+            }
+            .match-card {
+                height: 40px;
+                font-size: 16px;
+            }
         }
 
         .profile-user-card {
