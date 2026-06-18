@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多邻国风格摩斯密码学习应用</title>
+    <!-- 引入高质感现代 Google 字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Roboto:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-green: #58CC02;
+            --color-green-dark: #46A302;
+            --color-blue: #1CB0F6;
+            --color-blue-dark: #1899D6;
+            --color-yellow: #FFC800;
+            --color-yellow-dark: #E6B400;
+            --color-red: #FF4B4B;
+            --color-red-dark: #EA2B2B;
+            --color-gray-border: #E5E5E5;
+            --color-text-dark: #3C3C3C;
+            --color-text-light: #AFAFAF;
+            --color-bg-light: #F7F7F7;
+            --color-white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Outfit', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            overflow-x: hidden;
+        }
+
+        /* 应用主体，限制最大宽度以适配手机和桌面居中 */
+        .app-container {
+            width: 100%;
+            max-width: 540px;
+            background-color: var(--color-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* 隐藏元素的类 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 立体按钮 */
+        .duo-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            border-radius: 16px;
+            border: none;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .duo-btn-green {
+            background-color: var(--color-green);
+            color: var(--color-white);
+            box-shadow: 0 4px 0 var(--color-green-dark);
+        }
+
+        .duo-btn-green:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-green-dark);
+        }
+
+        .duo-btn-blue {
+            background-color: var(--color-blue);
+            color: var(--color-white);
+            box-shadow: 0 4px 0 var(--color-blue-dark);
+        }
+
+        .duo-btn-blue:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-blue-dark);
+        }
+
+        .duo-btn-yellow {
+            background-color: var(--color-yellow);
+            color: var(--color-white);
+            box-shadow: 0 4px 0 var(--color-yellow-dark);
+        }
+
+        .duo-btn-yellow:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-yellow-dark);
+        }
+
+        .duo-btn-red {
+            background-color: var(--color-red);
+            color: var(--color-white);
+            box-shadow: 0 4px 0 var(--color-red-dark);
+        }
+
+        .duo-btn-red:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-red-dark);
+        }
+
+        .duo-btn-gray {
+            background-color: var(--color-white);
+            color: var(--color-text-light);
+            border: 2px solid var(--color-gray-border);
+            box-shadow: 0 4px 0 var(--color-gray-border);
+        }
+
+        .duo-btn-gray:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-gray-border);
+        }
+
+        .duo-btn-disabled {
+            background-color: #E5E5E5 !important;
+            color: #AFAFAF !important;
+            box-shadow: 0 4px 0 #CCCCCC !important;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* 顶部导航状态栏 */
+        .top-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--color-gray-border);
+            background-color: var(--color-white);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .status-icon {
+            font-size: 20px;
+        }
+
+        .status-streak { color: #FF9600; }
+        .status-xp { color: var(--color-yellow); }
+        .status-heart { color: var(--color-red); }
+
+        /* ================= SCREEN: HOME ================= */
+        #home-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 40px;
+        }
+
+        .map-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 800;
+            margin: 24px 0 10px 0;
+            color: var(--color-text-dark);
+        }
+
+        /* 蜿蜒关卡地图容器 */
+        .level-map-container {
+            flex: 1;
+            position: relative;
+            margin: 20px 0;
+            padding: 0 40px;
+            min-height: 850px;
+        }
+
+        .level-map-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .level-nodes-wrapper {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .level-node-row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            position: relative;
+        }
+
+        /* 关卡球样式 */
+        .level-circle {
+            width: 70px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--color-white);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .level-circle.locked {
+            background-color: #E5E5E5;
+            box-shadow: 0 6px 0 #BDBDBD;
+            color: #AFAFAF;
+            cursor: not-allowed;
+        }
+
+        .level-circle.unlocked {
+            background-color: var(--color-green);
+            box-shadow: 0 8px 0 var(--color-green-dark);
+        }
+
+        .level-circle.unlocked:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 var(--color-green-dark);
+        }
+
+        .level-circle.completed {
+            background-color: var(--color-yellow);
+            box-shadow: 0 8px 0 var(--color-yellow-dark);
+        }
+
+        .level-circle.completed:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 var(--color-yellow-dark);
+        }
+
+        .level-circle.unlocked.active-level::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 3px dashed var(--color-green);
+            animation: rotate-outline 8s linear infinite;
+        }
+
+        @keyframes rotate-outline {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 悬浮提示框 (类似于多邻国的小卡片) */
+        .level-tooltip {
+            position: absolute;
+            background-color: var(--color-text-dark);
+            color: var(--color-white);
+            border-radius: 12px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+            bottom: 85px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+
+        .level-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--color-text-dark) transparent transparent transparent;
+        }
+
+        .level-circle:hover .level-tooltip {
+            opacity: 1;
+            transform: translate(-50%, -5px);
+        }
+
+        /* 底部操作区 */
+        .home-footer {
+            padding: 10px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        /* ================= SCREEN: LESSON ================= */
+        #lesson-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            gap: 16px;
+            border-bottom: 2px solid var(--color-gray-border);
+        }
+
+        .close-btn {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--color-text-light);
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 4px;
+        }
+
+        .close-btn:hover {
+            color: var(--color-text-dark);
+        }
+
+        /* 进度条 */
+        .progress-bar-container {
+            flex: 1;
+            height: 16px;
+            background-color: var(--color-gray-border);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--color-green);
+            border-radius: 8px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        /* 进度条内反光效果 */
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 5px;
+            right: 5px;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 1.5px;
+        }
+
+        .lesson-hearts {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--color-red);
+        }
+
+        .lesson-body {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* ================= SUB-PHASE: PREVIEW ================= */
+        .preview-phase {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .preview-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .preview-desc {
+            font-size: 15px;
+            color: var(--color-text-light);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .preview-cards-container {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .preview-card {
+            background: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 20px;
+            width: 150px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--color-gray-border);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .preview-card:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-gray-border);
+        }
+
+        .preview-card-char {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            margin-bottom: 8px;
+        }
+
+        .preview-card-morse {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--color-blue);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .play-preview-icon {
+            width: 44px;
+            height: 44px;
+            background-color: rgba(28, 176, 246, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--color-blue);
+            font-size: 18px;
+        }
+
+        .preview-card:hover .play-preview-icon {
+            background-color: var(--color-blue);
+            color: var(--color-white);
+        }
+
+        /* Mnemonic Overlay Container */
+        .mnemonic-container {
+            width: 300px;
+            height: 300px;
+            background-color: #FAFAFA;
+            border: 2px dashed var(--color-gray-border);
+            border-radius: 24px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .mnemonic-letter-bg {
+            font-family: 'Roboto', 'Arial Black', sans-serif;
+            font-size: 200px;
+            font-weight: 900;
+            color: #EAEAEA;
+            line-height: 1;
+            z-index: 1;
+            /* 关键：让子元素（点划）的百分比坐标相对于字母文字本身，与编辑器一致 */
+            position: relative;
+        }
+
+        .m-element {
+            position: absolute;
+            background-color: #3C3C3C;
+            border: 3px solid var(--color-white);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            z-index: 2;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .m-element:hover {
+            background-color: var(--color-blue);
+            transform: scale(1.1);
+        }
+
+        .m-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .m-dash {
+            width: 30px;
+            height: 80px;
+            border-radius: 4px;
+        }
+
+        /* 闪烁状态的亮绿色发光样式 */
+        .m-element.active-blink {
+            background-color: var(--color-green) !important;
+            box-shadow: 0 0 20px var(--color-green) !important;
+            border-color: var(--color-white) !important;
+        }
+
+        /* ================= SCREEN: LESSON CARD PHASES ================= */
+        .lesson-question-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            flex: 1;
+        }
+
+        .question-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--color-text-dark);
+            text-align: left;
+            width: 100%;
+        }
+
+        /* 题型 1: 听音辨字 */
+        .audio-buttons-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .audio-play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--color-blue);
+            border: none;
+            color: var(--color-white);
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 6px 0 var(--color-blue-dark);
+            transition: transform 0.05s, box-shadow 0.05s;
+        }
+
+        .audio-play-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 var(--color-blue-dark);
+        }
+
+        .audio-play-btn-slow {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--color-yellow);
+            border: none;
+            color: var(--color-white);
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 6px 0 var(--color-yellow-dark);
+            transition: transform 0.05s, box-shadow 0.05s;
+        }
+
+        .audio-play-btn-slow:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 var(--color-yellow-dark);
+        }
+
+        /* 多选一网格 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .option-card {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--color-gray-border);
+            transition: all 0.1s ease;
+            position: relative;
+        }
+
+        .option-card:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--color-gray-border);
+        }
+
+        .option-card.selected {
+            border-color: #84D8FF;
+            background-color: #E1F5FE;
+            box-shadow: 0 4px 0 #84D8FF;
+            color: #0079C1;
+        }
+
+        .option-card.selected:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 #84D8FF;
+        }
+
+        .option-shortcut {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            font-size: 11px;
+            color: var(--color-text-light);
+            border: 1px solid var(--color-gray-border);
+            border-radius: 4px;
+            padding: 1px 4px;
+        }
+
+        /* 题型 2: 输入摩斯码 */
+        .input-code-display {
+            min-height: 60px;
+            border-bottom: 2px dashed var(--color-gray-border);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--color-blue);
+            letter-spacing: 6px;
+            margin-bottom: 40px;
+        }
+
+        .morse-input-panel {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .morse-input-btn {
+            flex: 1;
+            max-width: 120px;
+            height: 70px;
+            font-size: 32px;
+        }
+
+        .morse-backspace-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 20px;
+        }
+
+        .keyboard-hint {
+            font-size: 13px;
+            color: var(--color-text-light);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* 题型 3: 配对连线 */
+        .matching-columns {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .matching-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .match-card {
+            background-color: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--color-gray-border);
+            transition: all 0.1s ease;
+        }
+
+        .match-card:active {
+            transform: translateY(3px);
+            box-shadow: 0 0px 0 var(--color-gray-border);
+        }
+
+        .match-card.selected {
+            border-color: #84D8FF;
+            background-color: #E1F5FE;
+            box-shadow: 0 3px 0 #84D8FF;
+            color: #0079C1;
+        }
+
+        .match-card.selected:active {
+            transform: translateY(3px);
+            box-shadow: 0 0px 0 #84D8FF;
+        }
+
+        .match-card.paired {
+            border-color: #B2FF59 !important;
+            background-color: #F1F8E9 !important;
+            color: #558B2F !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+            transform: none !important;
+            opacity: 0.8;
+        }
+
+        .match-card.error-blink {
+            border-color: #FF8A80;
+            background-color: #FFEBEE;
+            box-shadow: 0 3px 0 #FF8A80;
+            color: #C62828;
+            animation: shake 0.2s linear infinite;
+        }
+
+        /* CSS Shake 抖动动画 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        /* 题型 4: 翻译识别 */
+        .translation-input-box {
+            width: 100%;
+            height: 80px;
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            outline: none;
+            resize: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .translation-input-box:focus {
+            border-color: var(--color-blue);
+        }
+
+        /* ================= FOOTER CONTROL PANEL (DUOLINGO FEEDBACK) ================= */
+        .lesson-footer-panel {
+            padding: 24px;
+            border-top: 2px solid var(--color-gray-border);
+            background-color: var(--color-white);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: background-color 0.2s ease;
+        }
+
+        .feedback-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            display: none;
+        }
+
+        .feedback-icon-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .feedback-text-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feedback-title {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .feedback-message {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* 正确状态反馈框 */
+        .feedback-correct {
+            background-color: #D7FFB8;
+            border-top-color: #B2F374;
+        }
+
+        .feedback-correct .feedback-icon-container {
+            background-color: var(--color-white);
+            color: var(--color-green);
+        }
+
+        .feedback-correct .feedback-title {
+            color: #2B7A00;
+        }
+
+        .feedback-correct .feedback-message {
+            color: #3C8A00;
+        }
+
+        /* 错误状态反馈框 */
+        .feedback-incorrect {
+            background-color: #FFDFDF;
+            border-top-color: #FFC0C0;
+        }
+
+        .feedback-incorrect .feedback-icon-container {
+            background-color: var(--color-white);
+            color: var(--color-red);
+        }
+
+        .feedback-incorrect .feedback-title {
+            color: #EA2B2B;
+        }
+
+        .feedback-incorrect .feedback-message {
+            color: #EA2B2B;
+        }
+
+        /* 动画类：心形抖动与破碎 */
+        @keyframes heart-crack {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.3) rotate(-15deg); }
+            30% { transform: scale(1.3) rotate(15deg); }
+            45% { transform: scale(1.3) rotate(-15deg); }
+            60% { transform: scale(0.9) rotate(0deg); opacity: 0.5; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .heart-shattered {
+            animation: heart-crack 0.6s ease-in-out;
+        }
+
+        /* ================= SCREEN: RESULT ================= */
+        #result-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .result-star {
+            font-size: 50px;
+            color: #E5E5E5;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.4s ease;
+        }
+
+        .result-star.active {
+            color: var(--color-yellow);
+            text-shadow: 0 0 10px rgba(255, 200, 0, 0.3);
+            transform: scale(1.2) rotate(15deg);
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--color-green);
+            margin-bottom: 16px;
+        }
+
+        .result-stats-row {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            margin-bottom: 40px;
+            gap: 12px;
+        }
+
+        .result-stat-card {
+            flex: 1;
+            background: var(--color-white);
+            border: 2px solid var(--color-gray-border);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 0 var(--color-gray-border);
+        }
+
+        .stat-card-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--color-text-light);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+        }
+
+        .stat-card-value.xp-gain {
+            color: var(--color-yellow-dark);
+        }
+
+        /* ================= MODAL OVERLAYS ================= */
+        .modal-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 24px;
+        }
+
+        .modal-box {
+            background-color: var(--color-white);
+            border-radius: 24px;
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            animation: modal-enter 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modal-enter {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 54px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            margin-bottom: 12px;
+        }
+
+        .modal-desc {
+            font-size: 15px;
+            color: var(--color-text-light);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* XP数值发光或特效 */
+        .xp-display-glow {
+            text-shadow: 0 0 8px rgba(255, 200, 0, 0.5);
+        }
+
+        /* ================= HIGH-QUALITY GRAPHICAL MORSE (VISUAL MORSE) ================= */
+        .morse-visual-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            vertical-align: middle;
+        }
+        
+        .morse-visual-char {
+            display: inline-block;
+            background-color: var(--color-blue);
+            height: 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .morse-visual-dot {
+            width: 12px;
+        }
+        
+        .morse-visual-dash {
+            width: 32px;
+        }
+
+        /* 答对反馈栏中的点划颜色 */
+        .feedback-correct .morse-visual-char {
+            background-color: var(--color-green);
+        }
+
+        /* 答错反馈栏中的点划颜色 */
+        .feedback-incorrect .morse-visual-char {
+            background-color: var(--color-red);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- 顶部导航状态栏 (只在 Home 界面及结果界面生效，学习界面有独立顶部栏) -->
+        <div class="top-status-bar" id="app-status-bar">
+            <div class="status-item status-streak" title="连续学习天数">
+                <span class="status-icon">🔥</span>
+                <span id="streak-val">0</span>
+            </div>
+            <div class="status-item status-xp" title="经验值">
+                <span class="status-icon">✨</span>
+                <span id="xp-val" class="xp-display-glow">0</span>
+            </div>
+            <div class="status-item status-heart" title="生命值">
+                <span class="status-icon">❤️</span>
+                <span id="hearts-val">5</span>
+            </div>
+        </div>
+
+        <!-- ================= SCREEN: HOME ================= -->
+        <div id="home-screen">
+            <div class="map-title">摩斯密码学习地图</div>
+            
+            <div class="level-map-container" id="level-map-container">
+                <!-- SVG连接线 -->
+                <svg class="level-map-svg" id="map-svg">
+                    <path id="map-path" d="" fill="none" stroke="#E5E5E5" stroke-width="8" stroke-dasharray="12 8" stroke-linecap="round" />
+                </svg>
+
+                <div class="level-nodes-wrapper" id="level-nodes-wrapper">
+                    <!-- 关卡球由 JS 动态生成并挂载在这里 -->
+                </div>
+            </div>
+
+            <div class="home-footer">
+                <button class="duo-btn duo-btn-blue duo-btn-disabled" id="practice-all-btn">
+                    🔒 通关第1关解锁综合练习
+                </button>
+                <div style="display: flex; gap: 8px; width: 100%;">
+                    <button class="duo-btn duo-btn-gray" onclick="showResetConfirmModal()" style="flex: 1; font-size: 13px; padding: 10px 8px;">
+                        ⚠️ 重置数据
+                    </button>
+                    <button class="duo-btn duo-btn-gray" onclick="unlockAllLevelsCheat()" style="flex: 1; font-size: 13px; padding: 10px 8px; border-color: var(--color-blue); color: var(--color-blue);">
+                        🔓 解锁全部关卡
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCREEN: LESSON ================= -->
+        <div id="lesson-screen" class="hidden">
+            <div class="lesson-header">
+                <button class="close-btn" onclick="confirmExitLesson()">✖</button>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="lesson-progress-fill"></div>
+                </div>
+                <div class="lesson-hearts" id="lesson-hearts-container">
+                    <span id="lesson-heart-icon">❤️</span>
+                    <span id="lesson-heart-count">5</span>
+                </div>
+            </div>
+
+            <div class="lesson-body" id="lesson-body-area">
+                <!-- 学习卡片或题目卡片在此动态替换 -->
+            </div>
+
+            <!-- 反馈/动作底部栏 -->
+            <div class="lesson-footer-panel" id="lesson-footer-panel">
+                <!-- 答对/答错反馈区 -->
+                <div class="feedback-row" id="feedback-row">
+                    <div class="feedback-icon-container" id="feedback-icon">✓</div>
+                    <div class="feedback-text-container">
+                        <div class="feedback-title" id="feedback-title">非常好！</div>
+                        <div class="feedback-message" id="feedback-message">正确答案是：E</div>
+                    </div>
+                </div>
+                <!-- 行为按钮 -->
+                <button class="duo-btn duo-btn-green" id="lesson-action-btn" onclick="handleFooterAction()">检查答案</button>
+            </div>
+        </div>
+
+        <!-- ================= SCREEN: RESULT ================= -->
+        <div id="result-screen" class="hidden">
+            <div class="canvas-container">
+                <canvas id="confetti-canvas"></canvas>
+            </div>
+
+            <div class="stars-container" id="result-stars">
+                <span class="result-star">★</span>
+                <span class="result-star">★</span>
+                <span class="result-star">★</span>
+            </div>
+
+            <div class="result-title" id="result-main-title">关卡通过！</div>
+            
+            <div class="result-stats-row">
+                <div class="result-stat-card">
+                    <div class="stat-card-title">获得经验</div>
+                    <div class="stat-card-value xp-gain" id="result-xp-gain">+15 XP</div>
+                </div>
+                <div class="result-stat-card">
+                    <div class="stat-card-title">正确率</div>
+                    <div class="stat-card-value" id="result-accuracy">100%</div>
+                </div>
+            </div>
+
+            <button class="duo-btn duo-btn-green" style="width: 80%;" onclick="exitResultToHome()">继续</button>
+        </div>
+
+        <!-- ================= MODAL CONTAINERS ================= -->
+        <div id="modal-container" class="modal-mask hidden">
+            <!-- 模态框内容由 JS 替换 -->
+        </div>
+
+    </div>
+
+    <script>
+        // ================= MORSE DICTIONARY & CONFIGS =================
+        const morseData = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..',
+            'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
+            'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
+            'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+            'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..',
+            '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',
+            '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----'
+        };
+
+        const letterVisualConfigs = {
+            "A": [
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 26,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 50,
+                    "top": 62,
+                    "rotate": -90
+                }
+            ],
+            "B": [
+                {
+                    "type": "dash",
+                    "left": 22,
+                    "top": 50,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 60,
+                    "top": 25,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 60,
+                    "top": 50,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 62,
+                    "top": 75,
+                    "rotate": 0
+                }
+            ],
+            "C": [
+                {
+                    "type": "dash",
+                    "left": 53,
+                    "top": 25,
+                    "rotate": -90
+                },
+                {
+                    "type": "dot",
+                    "left": 17,
+                    "top": 37,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 21,
+                    "top": 61,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 55,
+                    "top": 74,
+                    "rotate": 0
+                }
+            ],
+            "D": [
+                {
+                    "type": "dash",
+                    "left": 22,
+                    "top": 51,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 60,
+                    "top": 27,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 60,
+                    "top": 73,
+                    "rotate": 0
+                }
+            ],
+            "E": [
+                {
+                    "type": "dot",
+                    "left": 26,
+                    "top": 48,
+                    "rotate": 0
+                }
+            ],
+            "F": [
+                {
+                    "type": "dot",
+                    "left": 26,
+                    "top": 25,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 84,
+                    "top": 25,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 26,
+                    "top": 52,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 80,
+                    "top": 50,
+                    "rotate": 0
+                }
+            ],
+            "G": [
+                {
+                    "type": "dash",
+                    "left": 19,
+                    "top": 47,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 55,
+                    "top": 74,
+                    "rotate": -90
+                },
+                {
+                    "type": "dot",
+                    "left": 61,
+                    "top": 52,
+                    "rotate": 0
+                }
+            ],
+            "H": [
+                {
+                    "type": "dot",
+                    "left": 20,
+                    "top": 25,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 80,
+                    "top": 25,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 20,
+                    "top": 75,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 80,
+                    "top": 75,
+                    "rotate": 0
+                }
+            ],
+            "I": [
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 25,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 75,
+                    "rotate": 0
+                }
+            ],
+            "J": [
+                {
+                    "type": "dot",
+                    "left": 74,
+                    "top": 7,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 74,
+                    "top": 35,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 74,
+                    "top": 71,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 20,
+                    "top": 81,
+                    "rotate": -90
+                }
+            ],
+            "K": [
+                {
+                    "type": "dash",
+                    "left": 73,
+                    "top": 29,
+                    "rotate": 38
+                },
+                {
+                    "type": "dot",
+                    "left": 39,
+                    "top": 50,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 72,
+                    "top": 67,
+                    "rotate": -30
+                }
+            ],
+            "L": [
+                {
+                    "type": "dot",
+                    "left": 26,
+                    "top": 24,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 26,
+                    "top": 49,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 26,
+                    "top": 74,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 82,
+                    "top": 74,
+                    "rotate": 0
+                }
+            ],
+            "M": [
+                {
+                    "type": "dash",
+                    "left": 16,
+                    "top": 50,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 84,
+                    "top": 50,
+                    "rotate": 0
+                }
+            ],
+            "N": [
+                {
+                    "type": "dash",
+                    "left": 20,
+                    "top": 50,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 78,
+                    "top": 71,
+                    "rotate": 0
+                }
+            ],
+            "O": [
+                {
+                    "type": "dash",
+                    "left": 18,
+                    "top": 49,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 50,
+                    "top": 76,
+                    "rotate": -90
+                },
+                {
+                    "type": "dash",
+                    "left": 82,
+                    "top": 49,
+                    "rotate": 0
+                }
+            ],
+            "P": [
+                {
+                    "type": "dot",
+                    "left": 22,
+                    "top": 40,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 51,
+                    "top": 25,
+                    "rotate": -90
+                },
+                {
+                    "type": "dash",
+                    "left": 54,
+                    "top": 54,
+                    "rotate": -90
+                },
+                {
+                    "type": "dot",
+                    "left": 83,
+                    "top": 39,
+                    "rotate": 0
+                }
+            ],
+            "Q": [
+                {
+                    "type": "dash",
+                    "left": 23,
+                    "top": 32,
+                    "rotate": 40
+                },
+                {
+                    "type": "dash",
+                    "left": 25,
+                    "top": 67,
+                    "rotate": -40
+                },
+                {
+                    "type": "dot",
+                    "left": 64,
+                    "top": 74,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 84,
+                    "top": 49,
+                    "rotate": 0
+                }
+            ],
+            "R": [
+                {
+                    "type": "dot",
+                    "left": 22,
+                    "top": 73,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 41,
+                    "top": 52,
+                    "rotate": -90
+                },
+                {
+                    "type": "dot",
+                    "left": 79,
+                    "top": 73,
+                    "rotate": 0
+                }
+            ],
+            "S": [
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 25,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 50,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 75,
+                    "rotate": 0
+                }
+            ],
+            "T": [
+                {
+                    "type": "dash",
+                    "left": 50,
+                    "top": 26,
+                    "rotate": -90
+                }
+            ],
+            "U": [
+                {
+                    "type": "dot",
+                    "left": 21,
+                    "top": 27,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 79,
+                    "top": 27,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 50,
+                    "top": 72,
+                    "rotate": -90
+                }
+            ],
+            "V": [
+                {
+                    "type": "dot",
+                    "left": 19,
+                    "top": 26,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 83,
+                    "top": 26,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 71,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 50,
+                    "top": 88,
+                    "rotate": -90
+                }
+            ],
+            "W": [
+                {
+                    "type": "dot",
+                    "left": 14,
+                    "top": 26,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 42,
+                    "top": 50,
+                    "rotate": 11
+                },
+                {
+                    "type": "dash",
+                    "left": 80,
+                    "top": 50,
+                    "rotate": 11
+                }
+            ],
+            "X": [
+                {
+                    "type": "dash",
+                    "left": 29,
+                    "top": 32,
+                    "rotate": -29
+                },
+                {
+                    "type": "dot",
+                    "left": 68,
+                    "top": 35,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 33,
+                    "top": 62,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 70,
+                    "top": 66,
+                    "rotate": -29
+                }
+            ],
+            "Y": [
+                {
+                    "type": "dash",
+                    "left": 26,
+                    "top": 33,
+                    "rotate": -27
+                },
+                {
+                    "type": "dot",
+                    "left": 50,
+                    "top": 53,
+                    "rotate": 0
+                },
+                {
+                    "type": "dash",
+                    "left": 74,
+                    "top": 33,
+                    "rotate": 27
+                },
+                {
+                    "type": "dash",
+                    "left": 50,
+                    "top": 77,
+                    "rotate": 0
+                }
+            ],
+            "Z": [
+                {
+                    "type": "dash",
+                    "left": 46,
+                    "top": 25,
+                    "rotate": -90
+                },
+                {
+                    "type": "dash",
+                    "left": 54,
+                    "top": 49,
+                    "rotate": 36
+                },
+                {
+                    "type": "dot",
+                    "left": 20,
+                    "top": 74,
+                    "rotate": 0
+                },
+                {
+                    "type": "dot",
+                    "left": 85,
+                    "top": 74,
+                    "rotate": 0
+                }
+            ]
+        };
+
+        const levels = [
+            { id: 1, name: "第一关：入门双音", chars: ['E', 'T'], desc: "基础单音 E (.) 与 T (-)" },
+            { id: 2, name: "第二关：双音对称", chars: ['I', 'M'], desc: "双音对称 I (..) 与 M (--)" },
+            { id: 3, name: "第三关：双音镜像", chars: ['A', 'N'], desc: "双音镜像 A (.-) 与 N (-.)" },
+            { id: 4, name: "第四关：三音对称", chars: ['S', 'O'], desc: "三音对称 S (...) 与 O (---)" },
+            { id: 5, name: "第五关：高频引入", chars: ['H', 'G'], desc: "引入 H (....) 与 G (--.)" },
+            { id: 6, name: "第六关：三音镜像", chars: ['D', 'U'], desc: "三音镜像 D (-..) 与 U (..-)" },
+            { id: 7, name: "第七关：三音夹心", chars: ['R', 'K'], desc: "三音夹心 R (.-.) 与 K (-.-)" },
+            { id: 8, name: "第八关：四音镜像", chars: ['B', 'V'], desc: "四音镜像 B (-...) 与 V (...-)" },
+            { id: 9, name: "第九关：四音对称", chars: ['L', 'F'], desc: "四音易混 L (.-..) 与 F (..-.)" },
+            { id: 10, name: "第十关：四音交替", chars: ['C', 'Y'], desc: "四音交替 C (-.-.) 与 Y (-.--)" },
+            { id: 11, name: "十一关：点起手长音", chars: ['P', 'W', 'J'], desc: "P (.--.)、W (.--) 与 J (.---)" },
+            { id: 12, name: "十二关：难点收尾", chars: ['Q', 'X', 'Z'], desc: "Q (--.-)、X (-..-) 与 Z (--..)" },
+            { id: 13, name: "十三关：基础数字", chars: ['1', '2', '3', '4', '5'], desc: "数字 1-5" },
+            { id: 14, name: "十四关：高位数字", chars: ['6', '7', '8', '9', '0'], desc: "数字 6-0" }
+        ];
+
+        // ================= WEB AUDIO PLAYER =================
+        class MorsePlayer {
+            constructor() {
+                this.audioCtx = null;
+                this.frequency = 680;
+                this.oscillator = null;
+                this.gainNode = null;
+            }
+
+            init() {
+                if (!this.audioCtx) {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+            }
+
+            play(morseCode, speedMultiplier = 1.0) {
+                this.init();
+                this.stop();
+
+                const baseUnit = 80 * speedMultiplier; // ms
+                const dotDuration = baseUnit / 1000;
+                const dashDuration = (baseUnit * 3) / 1000;
+                const intraGap = baseUnit / 1000;
+
+                let time = this.audioCtx.currentTime + 0.05;
+
+                this.oscillator = this.audioCtx.createOscillator();
+                this.gainNode = this.audioCtx.createGain();
+
+                this.oscillator.type = 'sine';
+                this.oscillator.frequency.value = this.frequency;
+                
+                // 初始静音
+                this.gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
+
+                for (let i = 0; i < morseCode.length; i++) {
+                    const char = morseCode[i];
+                    if (char === '.' || char === '-') {
+                        const duration = (char === '.') ? dotDuration : dashDuration;
+                        
+                        // 线性渐变淡入淡出，消除切换卡嗒声
+                        this.gainNode.gain.setValueAtTime(0, time);
+                        this.gainNode.gain.linearRampToValueAtTime(0.8, time + 0.005);
+                        this.gainNode.gain.setValueAtTime(0.8, time + duration - 0.005);
+                        this.gainNode.gain.linearRampToValueAtTime(0, time + duration);
+
+                        time += duration + intraGap;
+                    }
+                }
+
+                this.oscillator.connect(this.gainNode);
+                this.gainNode.connect(this.audioCtx.destination);
+
+                this.oscillator.start();
+                this.oscillator.stop(time);
+            }
+
+            stop() {
+                if (this.oscillator) {
+                    try {
+                        this.oscillator.stop();
+                    } catch(e) {}
+                    this.oscillator.disconnect();
+                    this.oscillator = null;
+                }
+            }
+
+            playFeedbackSound(isCorrect) {
+                this.init();
+                const now = this.audioCtx.currentTime;
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+
+                if (isCorrect) {
+                    // 答对：欢快的双音（880Hz -> 1174Hz）
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.setValueAtTime(1174, now + 0.08);
+                    
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.4, now + 0.01);
+                    gain.gain.setValueAtTime(0.4, now + 0.18);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.22);
+                    
+                    osc.start(now);
+                    osc.stop(now + 0.22);
+                } else {
+                    // 答错：低频的降调蜂鸣（220Hz）
+                    osc.frequency.setValueAtTime(220, now);
+                    
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.5, now + 0.01);
+                    gain.gain.setValueAtTime(0.5, now + 0.25);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                    
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                }
+            }
+        }
+
+        const morsePlayer = new MorsePlayer();
+
+        // 渲染高质感图形化点划组件 (Visual Morse)
+        function getMorseVisualHtml(morseCode) {
+            if (!morseCode) return '';
+            let html = '<span class="morse-visual-container">';
+            for (let char of morseCode) {
+                if (char === '.') {
+                    html += '<span class="morse-visual-char morse-visual-dot"></span>';
+                } else if (char === '-') {
+                    html += '<span class="morse-visual-char morse-visual-dash"></span>';
+                } else if (char === ' ') {
+                    html += '<span style="width: 10px;"></span>';
+                }
+            }
+            html += '</span>';
+            return html;
+        }
+
+        // ================= GAME ENGINE STATE =================
+        let state = {
+            xp: 0,
+            streak: 0,
+            unlockedLevel: 1, // 当前最高解锁的关卡 (1-14)
+            lastCompletedDate: null
+        };
+
+        // 当前关卡状态
+        let currentLesson = {
+            id: null, // 关卡ID，为 0 代表综合练习
+            isPractice: false,
+            charsPool: [],
+            queue: [], // 题目队列
+            wrongAnswers: new Set(), // 曾经答错的题目集合
+            totalOriginalCount: 10,
+            correctCount: 0,
+            hearts: 5,
+            maxHearts: 5,
+            errorCount: 0,
+            currentQuestion: null,
+            phase: 'preview', // 'preview' or 'question'
+            selectedOption: null, // 选择题用户选中的值
+            morseInput: '', // 输入题用户输入的值
+            selectedMatchLeft: null, // 配对题选中的左侧项索引
+            selectedMatchRight: null, // 配对题选中的右侧项索引
+            pairedLeft: new Set(), // 配对题已匹配的左侧索引集合
+            pairedRight: new Set() // 配对题已匹配的右侧索引集合
+        };
+
+        // ================= LOCAL STORAGE PERSISTENCE =================
+        function loadGameState() {
+            const savedState = localStorage.getItem('morse_game_state');
+            if (savedState) {
+                try {
+                    state = JSON.parse(savedState);
+                } catch(e) {
+                    console.error("加载存档失败", e);
+                }
+            }
+            updateStatusHeader();
+            checkPracticeUnlock();
+        }
+
+        function saveGameState() {
+            localStorage.setItem('morse_game_state', JSON.stringify(state));
+            updateStatusHeader();
+            checkPracticeUnlock();
+        }
+
+        function updateStatusHeader() {
+            document.getElementById('streak-val').textContent = state.streak;
+            document.getElementById('xp-val').textContent = state.xp;
+            // 心显示为主页默认的3
+            document.getElementById('hearts-val').textContent = 3;
+        }
+
+        function checkPracticeUnlock() {
+            const btn = document.getElementById('practice-all-btn');
+            if (state.unlockedLevel > 1) {
+                btn.className = "duo-btn duo-btn-blue";
+                btn.innerHTML = "✨ 进入综合温习 (不耗生命值)";
+                btn.onclick = () => startLesson(0);
+            } else {
+                btn.className = "duo-btn duo-btn-blue duo-btn-disabled";
+                btn.innerHTML = "🔒 通关第1关解锁综合练习";
+                btn.onclick = null;
+            }
+        }
+
+        // ================= RENDERING: LEVEL MAP =================
+        function renderLevelMap() {
+            const wrapper = document.getElementById('level-nodes-wrapper');
+            wrapper.innerHTML = '';
+
+            const containerWidth = 460; // 内部可用宽度
+            const steps = levels.length;
+            const nodes = [];
+
+            levels.forEach((lvl, idx) => {
+                const nodeRow = document.createElement('div');
+                nodeRow.className = 'level-node-row';
+
+                // 使用正弦曲线计算横向偏移，形成流畅蛇形蜿蜒
+                const xOffset = Math.sin(idx * 1.2) * 85; 
+                
+                const circle = document.createElement('div');
+                circle.className = 'level-circle';
+                
+                // 关卡锁定/解锁样式判定
+                if (lvl.id < state.unlockedLevel) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '★'; // 通关显示星星
+                } else if (lvl.id === state.unlockedLevel) {
+                    circle.classList.add('unlocked', 'active-level');
+                    circle.innerHTML = lvl.id;
+                } else {
+                    circle.classList.add('locked');
+                    circle.innerHTML = '🔒';
+                }
+
+                // 悬浮泡泡
+                const tooltip = document.createElement('div');
+                tooltip.className = 'level-tooltip';
+                tooltip.innerHTML = `<strong>${lvl.name}</strong><br>${lvl.desc}`;
+                circle.appendChild(tooltip);
+
+                // 点击进入关卡
+                circle.onclick = () => {
+                    if (lvl.id <= state.unlockedLevel) {
+                        startLesson(lvl.id);
+                    }
+                };
+
+                circle.style.transform = `translateX(${xOffset}px)`;
+                nodeRow.appendChild(circle);
+                wrapper.appendChild(nodeRow);
+
+                // 缓存中心点位置以便绘制连接SVG虚线
+                nodes.push({ x: xOffset, id: lvl.id });
+            });
+
+            // 绘制SVG连接折线
+            setTimeout(() => {
+                const svg = document.getElementById('map-svg');
+                const path = document.getElementById('map-path');
+                const circles = document.querySelectorAll('.level-circle');
+                
+                if (circles.length === 0) return;
+
+                const containerRect = document.getElementById('level-map-container').getBoundingClientRect();
+                let pathD = '';
+
+                circles.forEach((c, idx) => {
+                    const r = c.getBoundingClientRect();
+                    const cx = (r.left + r.right) / 2 - containerRect.left;
+                    const cy = (r.top + r.bottom) / 2 - containerRect.top;
+
+                    if (idx === 0) {
+                        pathD += `M ${cx} ${cy}`;
+                    } else {
+                        // 使用贝塞尔曲线使连线圆润平滑
+                        const prevR = circles[idx - 1].getBoundingClientRect();
+                        const prevCx = (prevR.left + prevR.right) / 2 - containerRect.left;
+                        const prevCy = (prevR.top + prevR.bottom) / 2 - containerRect.top;
+                        const midY = (prevCy + cy) / 2;
+                        pathD += ` C ${prevCx} ${midY}, ${cx} ${midY}, ${cx} ${cy}`;
+                    }
+                });
+
+                path.setAttribute('d', pathD);
+            }, 100);
+        }
+
+        // ================= LESSON ENGINE =================
+        function startLesson(levelId) {
+            morsePlayer.init(); // 允许音频环境激活
+
+            currentLesson.id = levelId;
+            currentLesson.isPractice = (levelId === 0);
+            
+            if (currentLesson.isPractice) {
+                // 综合练习：从所有已解锁的字母中抽题
+                let unlockedChars = [];
+                levels.forEach(lvl => {
+                    if (lvl.id < state.unlockedLevel) {
+                        unlockedChars = unlockedChars.concat(lvl.chars);
+                    }
+                });
+                // 防止极端情况下无题
+                if (unlockedChars.length === 0) {
+                    unlockedChars = ['E', 'T'];
+                }
+                currentLesson.charsPool = unlockedChars;
+                currentLesson.learnedPool = [...unlockedChars]; // 综合练习的已学字符池为 unlockedChars
+                currentLesson.maxHearts = 999; // 综合练习不扣心
+                currentLesson.hearts = 999;
+                currentLesson.phase = 'question'; // 直接开始，不显示关卡卡片预览
+            } else {
+                const lvl = levels.find(l => l.id === levelId);
+                currentLesson.charsPool = lvl.chars;
+                
+                // 收集当前关卡及之前所有已学关卡的字符
+                let learned = [];
+                levels.forEach(l => {
+                    if (l.id <= levelId) {
+                        learned = learned.concat(l.chars);
+                    }
+                });
+                currentLesson.learnedPool = learned;
+
+                currentLesson.maxHearts = levelId <= 3 ? 5 : 3;
+                currentLesson.hearts = currentLesson.maxHearts;
+                currentLesson.phase = 'preview'; // 先进行预览
+            }
+
+            currentLesson.correctCount = 0;
+            currentLesson.errorCount = 0;
+            currentLesson.wrongAnswers.clear();
+
+            // 生成10道题的队列
+            generateQuestionsQueue();
+
+            // 切换屏幕
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('app-status-bar').classList.add('hidden');
+            document.getElementById('lesson-screen').classList.remove('hidden');
+
+            updateLessonHeartsUI();
+            updateProgressBar();
+
+            if (currentLesson.phase === 'preview') {
+                renderPreviewPhase();
+            } else {
+                nextQuestion();
+            }
+        }
+
+        function generateQuestionsQueue() {
+            currentLesson.queue = [];
+            
+            // 题型列表。如果已学字符不足 4 个，剔除连线匹配题，避免选项无法凑齐
+            let types = ['audio-to-char', 'char-to-morse', 'matching', 'translation'];
+            if (currentLesson.learnedPool.length < 4) {
+                types = ['audio-to-char', 'char-to-morse', 'translation'];
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                // 随机选一道题型
+                let randType = types[Math.floor(Math.random() * types.length)];
+                
+                // 数字关卡（13、14关）不提供配对连线和听力发音（只考输入和翻译，防止音频数据解析错误）
+                const isNumberLevel = currentLesson.charsPool.some(c => !isNaN(c));
+                if (isNumberLevel) {
+                    randType = Math.random() > 0.5 ? 'char-to-morse' : 'translation';
+                }
+
+                // 随机选择主测试字符
+                const targetChar = currentLesson.charsPool[Math.floor(Math.random() * currentLesson.charsPool.length)];
+
+                let q = {
+                    type: randType,
+                    target: targetChar,
+                    morse: morseData[targetChar]
+                };
+
+                // 为选择题生成选项
+                if (randType === 'audio-to-char') {
+                    q.options = generateOptions(targetChar, 'char');
+                } else if (randType === 'translation') {
+                    q.options = generateOptions(targetChar, 'char');
+                } else if (randType === 'matching') {
+                    // 配对题：获取当前关卡字符 pool 并混淆
+                    const pool = [...currentLesson.charsPool];
+                    
+                    // 优先从已学字符中补充其他字母以凑满 4 个
+                    const learnedCandidates = currentLesson.learnedPool.filter(c => !pool.includes(c));
+                    const shuffledLearned = shuffle([...learnedCandidates]);
+                    for (let i = 0; i < shuffledLearned.length; i++) {
+                        if (pool.length >= 4) break;
+                        pool.push(shuffledLearned[i]);
+                    }
+                    
+                    // 取前4个并打乱
+                    const selected = pool.slice(0, 4);
+                    q.leftItems = shuffle([...selected]);
+                    q.rightItems = shuffle(selected.map(char => ({ char: char, morse: morseData[char] })));
+                }
+
+                currentLesson.queue.push(q);
+            }
+            currentLesson.totalOriginalCount = currentLesson.queue.length;
+        }
+
+        function generateOptions(target, mode) {
+            const options = [target];
+            
+            // 严格只从已学字符中选择干扰项，不进行全局补充
+            const learnedCandidates = currentLesson.learnedPool.filter(c => c !== target);
+            const shuffledLearned = shuffle([...learnedCandidates]);
+            for (let i = 0; i < shuffledLearned.length; i++) {
+                if (options.length >= 4) break;
+                options.push(shuffledLearned[i]);
+            }
+            
+            return shuffle(options);
+        }
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function updateProgressBar() {
+            const fill = document.getElementById('lesson-progress-fill');
+            const percent = (currentLesson.correctCount / currentLesson.totalOriginalCount) * 100;
+            fill.style.width = `${Math.min(percent, 100)}%`;
+        }
+
+        function updateLessonHeartsUI() {
+            const count = document.getElementById('lesson-heart-count');
+            const icon = document.getElementById('lesson-heart-icon');
+            
+            if (currentLesson.isPractice) {
+                count.textContent = '∞';
+                icon.textContent = '✨';
+            } else {
+                count.textContent = currentLesson.hearts;
+                icon.textContent = '❤️';
+            }
+        }
+
+        // ================= RENDERING: PREVIEW PHASE =================
+        function renderPreviewPhase() {
+            const area = document.getElementById('lesson-body-area');
+            
+            let cardsHtml = '';
+            currentLesson.charsPool.forEach(char => {
+                cardsHtml += `
+                    <div class="preview-card" onclick="playMorseSoundWithFlash('${char}')">
+                        <div class="preview-card-char">${char}</div>
+                        <div class="preview-card-morse">${getMorseVisualHtml(morseData[char])}</div>
+                        <div class="play-preview-icon">🔊</div>
+                    </div>
+                `;
+            });
+
+            // 默认渲染第一个字符的联想图像
+            const firstChar = currentLesson.charsPool[0];
+
+            area.innerHTML = `
+                <div class="preview-phase">
+                    <div class="preview-title">本关新字母速记</div>
+                    <div class="preview-desc">点击卡片播放电报声音，查看摩斯码如何契合笔画</div>
+                    
+                    <!-- 记忆叠加层 -->
+                    <div class="mnemonic-container" id="mnemonic-viewer">
+                        ${renderMnemonicSvg(firstChar)}
+                    </div>
+
+                    <div class="preview-cards-container">
+                        ${cardsHtml}
+                    </div>
+                </div>
+            `;
+
+            // 监听卡片，切换叠加视图
+            const cards = area.querySelectorAll('.preview-card');
+            cards.forEach((card, idx) => {
+                card.addEventListener('click', () => {
+                    const char = currentLesson.charsPool[idx];
+                    document.getElementById('mnemonic-viewer').innerHTML = renderMnemonicSvg(char);
+                });
+            });
+
+            // 设置底部按钮
+            const actionBtn = document.getElementById('lesson-action-btn');
+            actionBtn.className = "duo-btn duo-btn-green";
+            actionBtn.innerHTML = "准备好了！开始练习";
+            actionBtn.onclick = () => {
+                currentLesson.phase = 'question';
+                nextQuestion();
+            };
+        }
+
+        // 定位公式与 morse_position_editor.html 完全一致，支持从 localStorage 动态加载
+        function renderMnemonicSvg(char) {
+            let config = null;
+            const savedData = localStorage.getItem(`morse_pos_${char}`);
+            if (savedData) {
+                try {
+                    config = JSON.parse(savedData);
+                } catch(e) {
+                    console.error("加载已保存位置失败", e);
+                }
+            }
+            if (!config) {
+                config = letterVisualConfigs[char];
+            }
+
+            if (!config) {
+                // 如果没有视觉记忆图（比如数字），显示大号普通文本
+                return `<div class="mnemonic-letter-bg" style="color: #AFAFAF;">${char}</div>`;
+            }
+
+            let elementsHtml = '';
+            config.forEach((el, idx) => {
+                const halfWidth = el.type === 'dot' ? 15 : 15;
+                const halfHeight = el.type === 'dot' ? 15 : 40;
+                // 完全复制编辑器的 updateElementStyle 定位公式
+                const style = `left: calc(${el.left}% - ${halfWidth}px); top: calc(${el.top}% - ${halfHeight}px); transform: rotate(${el.rotate || 0}deg);`;
+                elementsHtml += `
+                    <div class="m-element m-${el.type}" data-index="${idx}" style="${style}" onclick="playMorseUnitWithFlash('${el.type}', ${idx})"></div>
+                `;
+            });
+
+            // 点划元素放在字母 div 内部作为子元素（与编辑器 letter-display 结构完全一致）
+            // 这样百分比坐标就相对于字母文字自身宽高，而非外框容器
+            return `
+                <div class="mnemonic-letter-bg">${char}${elementsHtml}</div>
+            `;
+        }
+
+        function playMorseSound(code) {
+            morsePlayer.play(code, 1.0);
+        }
+
+        function playMorseUnit(type) {
+            if (type === 'dot') {
+                morsePlayer.play('.', 1.0);
+            } else {
+                morsePlayer.play('-', 1.0);
+            }
+        }
+
+        // 音形结合：发音并同步闪烁点划元素
+        function playMorseSoundWithFlash(char, speedMultiplier = 1.0) {
+            playMorseSound(morseData[char]);
+            flashMnemonicElements(char, speedMultiplier);
+        }
+
+        // 单音点击闪烁
+        function playMorseUnitWithFlash(type, idx) {
+            playMorseUnit(type);
+            const elDom = document.querySelector(`.mnemonic-container [data-index="${idx}"]`);
+            if (elDom) {
+                elDom.classList.add('active-blink');
+                setTimeout(() => {
+                    elDom.classList.remove('active-blink');
+                }, type === 'dot' ? 80 : 240);
+            }
+        }
+
+        // 精准控制发光点划元素的高亮时间
+        function flashMnemonicElements(char, speedMultiplier = 1.0) {
+            let config = null;
+            const savedData = localStorage.getItem(`morse_pos_${char}`);
+            if (savedData) {
+                try { config = JSON.parse(savedData); } catch(e){}
+            }
+            if (!config) {
+                config = letterVisualConfigs[char];
+            }
+            if (!config) return;
+
+            const baseUnit = 80 * speedMultiplier;
+            const dotDuration = baseUnit;
+            const dashDuration = baseUnit * 3;
+            const intraGap = baseUnit;
+
+            let delay = 50; // Web Audio 启动稍有 50ms 延时
+
+            config.forEach((elConfig, idx) => {
+                const duration = elConfig.type === 'dot' ? dotDuration : dashDuration;
+                
+                setTimeout(() => {
+                    const elDom = document.querySelector(`.mnemonic-container [data-index="${idx}"]`);
+                    if (elDom) {
+                        elDom.classList.add('active-blink');
+                        setTimeout(() => {
+                            elDom.classList.remove('active-blink');
+                        }, duration);
+                    }
+                }, delay);
+
+                delay += duration + intraGap;
+            });
+        }
+
+        // ================= RENDERING: QUESTIONS PHASE =================
+        function nextQuestion() {
+            // 重置状态
+            currentLesson.selectedOption = null;
+            currentLesson.morseInput = '';
+            currentLesson.selectedMatchLeft = null;
+            currentLesson.selectedMatchRight = null;
+            currentLesson.pairedLeft.clear();
+            currentLesson.pairedRight.clear();
+
+            // 隐藏反馈栏，恢复底部按钮样式
+            document.getElementById('feedback-row').style.display = 'none';
+            const footer = document.getElementById('lesson-footer-panel');
+            footer.className = "lesson-footer-panel";
+            
+            const actionBtn = document.getElementById('lesson-action-btn');
+            actionBtn.className = "duo-btn duo-btn-gray duo-btn-disabled";
+            actionBtn.innerHTML = "检查答案";
+            actionBtn.onclick = null;
+
+            if (currentLesson.queue.length === 0) {
+                // 队列答完，进入结算
+                finishLesson();
+                return;
+            }
+
+            // 取出队首题目
+            const q = currentLesson.queue[0];
+            currentLesson.currentQuestion = q;
+
+            // 渲染答题区域
+            const area = document.getElementById('lesson-body-area');
+            
+            if (q.type === 'audio-to-char') {
+                renderAudioToChar(area, q);
+            } else if (q.type === 'char-to-morse') {
+                renderCharToMorse(area, q);
+            } else if (q.type === 'matching') {
+                renderMatching(area, q);
+            } else if (q.type === 'translation') {
+                renderTranslation(area, q);
+            }
+
+            // 播放音频（如果是听力题，自动响一次）
+            if (q.type === 'audio-to-char') {
+                setTimeout(() => morsePlayer.play(q.morse, 1.0), 300);
+            }
+        }
+
+        // --- 题型 1: 听音辨字 ---
+        function renderAudioToChar(area, q) {
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                optionsHtml += `
+                    <div class="option-card" onclick="selectOption('${opt}')" id="opt-${opt}">
+                        <span class="option-shortcut">${idx + 1}</span>
+                        ${opt}
+                    </div>
+                `;
+            });
+
+            area.innerHTML = `
+                <div class="lesson-question-container">
+                    <div class="question-title">听电报声音，选择对应的字母</div>
+                    
+                    <div class="audio-buttons-row">
+                        <button class="audio-play-btn" onclick="playMorseSound('${q.morse}')" title="正常播放 (Space)">🔊</button>
+                        <button class="audio-play-btn-slow" onclick="morsePlayer.play('${q.morse}', 1.6)" title="慢速播放 (S)">🐢</button>
+                    </div>
+
+                    <div class="options-grid">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectOption(val) {
+            // 取消上次选择的
+            if (currentLesson.selectedOption) {
+                const prev = document.getElementById(`opt-${currentLesson.selectedOption}`);
+                if (prev) prev.classList.remove('selected');
+            }
+            currentLesson.selectedOption = val;
+            document.getElementById(`opt-${val}`).classList.add('selected');
+
+            // 激活底部检查按钮
+            enableCheckButton();
+        }
+
+        function enableCheckButton() {
+            const actionBtn = document.getElementById('lesson-action-btn');
+            actionBtn.className = "duo-btn duo-btn-green";
+            actionBtn.onclick = () => checkAnswer();
+        }
+
+        // --- 题型 2: 输入摩斯码 ---
+        function renderCharToMorse(area, q) {
+            area.innerHTML = `
+                <div class="lesson-question-container">
+                    <div class="question-title">请输入字母 「 ${q.target} 」 的摩斯密码</div>
+                    
+                    <!-- 记忆联想叠加层，辅助记忆 -->
+                    <div class="mnemonic-container">
+                        ${renderMnemonicSvg(q.target)}
+                    </div>
+
+                    <div class="input-code-display" id="morse-input-display">...</div>
+
+                    <div class="morse-input-panel">
+                        <button class="duo-btn duo-btn-blue morse-input-btn" onclick="pressMorseChar('.')">· (嘀)</button>
+                        <button class="duo-btn duo-btn-blue morse-input-btn" onclick="pressMorseChar('-')">− (哒)</button>
+                        <button class="duo-btn duo-btn-gray morse-backspace-btn" onclick="pressBackspace()">⌫</button>
+                    </div>
+                    <div class="keyboard-hint">快捷键：键盘 [ . ] 输入点， [ - ] 输入划， [ Backspace ] 退格， [ Enter ] 提交</div>
+                </div>
+            `;
+            updateInputDisplay();
+        }
+
+        function pressMorseChar(ch) {
+            // 限制摩斯码最长5位
+            if (currentLesson.morseInput.length < 6) {
+                currentLesson.morseInput += ch;
+                updateInputDisplay();
+                enableCheckButton();
+            }
+        }
+
+        function pressBackspace() {
+            currentLesson.morseInput = currentLesson.morseInput.slice(0, -1);
+            updateInputDisplay();
+            if (currentLesson.morseInput.length === 0) {
+                const actionBtn = document.getElementById('lesson-action-btn');
+                actionBtn.className = "duo-btn duo-btn-gray duo-btn-disabled";
+                actionBtn.onclick = null;
+            }
+        }
+
+        function updateInputDisplay() {
+            const display = document.getElementById('morse-input-display');
+            if (currentLesson.morseInput) {
+                display.innerHTML = getMorseVisualHtml(currentLesson.morseInput);
+            } else {
+                display.textContent = '请输入';
+            }
+        }
+
+        // --- 题型 3: 配对连线 ---
+        function renderMatching(area, q) {
+            let leftHtml = '';
+            q.leftItems.forEach((char, idx) => {
+                leftHtml += `
+                    <div class="match-card" id="match-l-${idx}" onclick="selectMatchItem(${idx}, 'left')">
+                        ${char}
+                    </div>
+                `;
+            });
+
+            let rightHtml = '';
+            q.rightItems.forEach((item, idx) => {
+                rightHtml += `
+                    <div class="match-card" id="match-r-${idx}" onclick="selectMatchItem(${idx}, 'right')" style="display: flex; justify-content: center; align-items: center; min-height: 48px;">
+                        ${getMorseVisualHtml(item.morse)}
+                    </div>
+                `;
+            });
+
+            area.innerHTML = `
+                <div class="lesson-question-container">
+                    <div class="question-title">将字母与其相对应的摩斯码配对连线</div>
+                    
+                    <div class="matching-columns">
+                        <div class="matching-column">
+                            ${leftHtml}
+                        </div>
+                        <div class="matching-column">
+                            ${rightHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectMatchItem(idx, side) {
+            if (side === 'left') {
+                if (currentLesson.pairedLeft.has(idx)) return; // 已经配对的跳过
+
+                if (currentLesson.selectedMatchLeft !== null) {
+                    document.getElementById(`match-l-${currentLesson.selectedMatchLeft}`).classList.remove('selected');
+                }
+                currentLesson.selectedMatchLeft = idx;
+                document.getElementById(`match-l-${idx}`).classList.add('selected');
+            } else {
+                if (currentLesson.pairedRight.has(idx)) return;
+
+                if (currentLesson.selectedMatchRight !== null) {
+                    document.getElementById(`match-r-${currentLesson.selectedMatchRight}`).classList.remove('selected');
+                }
+                currentLesson.selectedMatchRight = idx;
+                document.getElementById(`match-r-${idx}`).classList.add('selected');
+            }
+
+            // 触发连线核对
+            if (currentLesson.selectedMatchLeft !== null && currentLesson.selectedMatchRight !== null) {
+                checkMatchPair();
+            }
+        }
+
+        function checkMatchPair() {
+            const leftIdx = currentLesson.selectedMatchLeft;
+            const rightIdx = currentLesson.selectedMatchRight;
+            
+            const leftChar = currentLesson.currentQuestion.leftItems[leftIdx];
+            const rightMorse = currentLesson.currentQuestion.rightItems[rightIdx].morse;
+            const rightChar = currentLesson.currentQuestion.rightItems[rightIdx].char;
+
+            const lCard = document.getElementById(`match-l-${leftIdx}`);
+            const rCard = document.getElementById(`match-r-${rightIdx}`);
+
+            if (leftChar === rightChar) {
+                // 配对成功
+                morsePlayer.playFeedbackSound(true);
+                lCard.className = "match-card paired";
+                rCard.className = "match-card paired";
+
+                currentLesson.pairedLeft.add(leftIdx);
+                currentLesson.pairedRight.add(rightIdx);
+
+                // 重置选中
+                currentLesson.selectedMatchLeft = null;
+                currentLesson.selectedMatchRight = null;
+
+                // 判断是否全部配对完成
+                if (currentLesson.pairedLeft.size === 4) {
+                    enableCheckButton();
+                    // 配对成功后自动点一下 Check 进入结算反馈
+                    setTimeout(() => checkAnswer(), 300);
+                }
+            } else {
+                // 配对失败，短暂闪红并抖动
+                morsePlayer.playFeedbackSound(false);
+                lCard.className = "match-card error-blink";
+                rCard.className = "match-card error-blink";
+
+                setTimeout(() => {
+                    lCard.className = "match-card";
+                    rCard.className = "match-card";
+                    lCard.classList.remove('selected');
+                    rCard.classList.remove('selected');
+                }, 400);
+
+                currentLesson.selectedMatchLeft = null;
+                currentLesson.selectedMatchRight = null;
+            }
+        }
+
+        // --- 题型 4: 翻译识别 ---
+        function renderTranslation(area, q) {
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                optionsHtml += `
+                    <div class="option-card" onclick="selectOption('${opt}')" id="opt-${opt}">
+                        <span class="option-shortcut">${idx + 1}</span>
+                        ${opt}
+                    </div>
+                `;
+            });
+
+            area.innerHTML = `
+                <div class="lesson-question-container">
+                    <div class="question-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        摩斯码 「 ${getMorseVisualHtml(q.morse)} 」 翻译后是哪一个字符？
+                    </div>
+                    <div class="options-grid">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ================= CHECK AND ACTION CONTROL =================
+        function checkAnswer() {
+            const q = currentLesson.currentQuestion;
+            let isCorrect = false;
+
+            if (q.type === 'audio-to-char' || q.type === 'translation') {
+                isCorrect = (currentLesson.selectedOption === q.target);
+            } else if (q.type === 'char-to-morse') {
+                isCorrect = (currentLesson.morseInput === q.morse);
+            } else if (q.type === 'matching') {
+                isCorrect = true; // 配对连线在卡片层面已经异步核对，到这里直接通过
+            }
+
+            // 渲染反馈条
+            const row = document.getElementById('feedback-row');
+            const icon = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            const msg = document.getElementById('feedback-message');
+            const footer = document.getElementById('lesson-footer-panel');
+
+            row.style.display = 'flex';
+
+            if (isCorrect) {
+                morsePlayer.playFeedbackSound(true);
+                footer.className = "lesson-footer-panel feedback-correct";
+                icon.textContent = "✓";
+                title.textContent = "回答正确！";
+                msg.innerHTML = `字母 ${q.target} 的摩斯电码正是: ${getMorseVisualHtml(q.morse)}`;
+
+                // 只有非重练题才算进度
+                if (!currentLesson.wrongAnswers.has(q.target)) {
+                    currentLesson.correctCount++;
+                }
+            } else {
+                morsePlayer.playFeedbackSound(false);
+                footer.className = "lesson-footer-panel feedback-incorrect";
+                icon.textContent = "✗";
+                title.textContent = "回答错误！";
+                msg.innerHTML = `正确答案是 ${q.target} : ${getMorseVisualHtml(q.morse)}`;
+
+                // 自动播放正确答案的发音，并在输入题的记忆图案中同步发光闪烁
+                setTimeout(() => {
+                    playMorseSoundWithFlash(q.target);
+                }, 500);
+
+                // 记录错误并将本题追加到队列尾部以待重练
+                currentLesson.errorCount++;
+                currentLesson.wrongAnswers.add(q.target);
+                currentLesson.queue.push(q);
+
+                // 扣减生命值
+                if (!currentLesson.isPractice) {
+                    currentLesson.hearts--;
+                    updateLessonHeartsUI();
+                    
+                    // 心形抖动动画
+                    const heartContainer = document.getElementById('lesson-hearts-container');
+                    heartContainer.classList.add('heart-shattered');
+                    setTimeout(() => heartContainer.classList.remove('heart-shattered'), 600);
+
+                    // 检查是否死亡
+                    if (currentLesson.hearts <= 0) {
+                        setTimeout(() => handleLevelFailed(), 500);
+                        return;
+                    }
+                }
+            }
+
+            // 将刚才完成的题目从队列首部移出
+            currentLesson.queue.shift();
+
+            // 更新进度条
+            updateProgressBar();
+
+            // 底部按钮切换为“继续”
+            const actionBtn = document.getElementById('lesson-action-btn');
+            actionBtn.className = "duo-btn duo-btn-green";
+            actionBtn.innerHTML = "继续";
+            actionBtn.onclick = () => nextQuestion();
+        }
+
+        function handleFooterAction() {
+            // 该函数一般用作快捷回车绑定
+            const actionBtn = document.getElementById('lesson-action-btn');
+            if (actionBtn.classList.contains('duo-btn-disabled')) return;
+            actionBtn.click();
+        }
+
+        // ================= LEVEL FAILED MODAL =================
+        function handleLevelFailed() {
+            const modal = document.getElementById('modal-container');
+            
+            // 是否有足够 XP 复活
+            const canRevive = state.xp >= 50;
+            const reviveBtnClass = canRevive ? "duo-btn duo-btn-green" : "duo-btn duo-btn-gray duo-btn-disabled";
+            const clickAction = canRevive ? "buyLifeWithXp()" : "";
+
+            modal.innerHTML = `
+                <div class="modal-box">
+                    <div class="modal-icon">💔</div>
+                    <div class="modal-title">生命值耗尽</div>
+                    <div class="modal-desc">别灰心！摩斯密码需要反复训练。你可以选择花费 50 XP 补满生命值继续，或重新开始。</div>
+                    <div class="modal-buttons">
+                        <button class="${reviveBtnClass}" onclick="${clickAction}">✨ 花费 50 XP 续命</button>
+                        <button class="duo-btn duo-btn-gray" onclick="exitLessonDirectly()">免费重新开始</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function buyLifeWithXp() {
+            if (state.xp >= 50) {
+                state.xp -= 50;
+                saveGameState();
+                currentLesson.hearts = currentLesson.maxHearts;
+                updateLessonHeartsUI();
+                
+                // 隐藏模态框
+                document.getElementById('modal-container').classList.add('hidden');
+                
+                // 自动继续下一题
+                nextQuestion();
+            }
+        }
+
+        function exitLessonDirectly() {
+            document.getElementById('modal-container').classList.add('hidden');
+            exitLesson();
+        }
+
+        function confirmExitLesson() {
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="modal-box">
+                    <div class="modal-icon">🚪</div>
+                    <div class="modal-title">确定要退出吗？</div>
+                    <div class="modal-desc">现在退出，当前关卡的学习进度将会丢失。</div>
+                    <div class="modal-buttons">
+                        <button class="duo-btn duo-btn-red" onclick="exitLessonDirectly()">确认退出</button>
+                        <button class="duo-btn duo-btn-gray" onclick="closeModal()">留下继续</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-container').classList.add('hidden');
+        }
+
+        function exitLesson() {
+            document.getElementById('lesson-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+            document.getElementById('app-status-bar').classList.remove('hidden');
+            renderLevelMap();
+        }
+
+        // ================= SCREEN: RESULT & Persistency =================
+        function finishLesson() {
+            document.getElementById('lesson-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            // 1. 计算获得的 XP 和星星
+            let xpGained = 15;
+            let stars = 1;
+            
+            if (currentLesson.errorCount === 0) {
+                stars = 3;
+                xpGained = 20; // 完美奖励 5 XP
+            } else if (currentLesson.errorCount <= 2) {
+                stars = 2;
+                xpGained = 15;
+            } else {
+                stars = 1;
+                xpGained = 10;
+            }
+
+            // 如果是综合练习，加成减半
+            if (currentLesson.isPractice) {
+                stars = 3;
+                xpGained = 5;
+            }
+
+            // 2. 更新全局状态
+            state.xp += xpGained;
+            
+            // 连续学习天数判定
+            updateStreakCount();
+
+            // 如果是当前最高解锁关卡，则解锁下一关
+            if (!currentLesson.isPractice && currentLesson.id === state.unlockedLevel) {
+                if (state.unlockedLevel < levels.length) {
+                    state.unlockedLevel++;
+                }
+            }
+
+            saveGameState();
+
+            // 3. UI 展现
+            document.getElementById('result-xp-gain').textContent = `+${xpGained} XP`;
+            
+            const rawAccuracy = ((currentLesson.totalOriginalCount) / (currentLesson.totalOriginalCount + currentLesson.errorCount)) * 100;
+            document.getElementById('result-accuracy').textContent = `${Math.round(rawAccuracy)}%`;
+            
+            document.getElementById('result-main-title').textContent = currentLesson.isPractice ? "温习完成！" : "关卡通过！";
+
+            // 渲染星星动画
+            const starNodes = document.querySelectorAll('.result-star');
+            starNodes.forEach((s, idx) => {
+                s.classList.remove('active');
+                if (idx < stars) {
+                    setTimeout(() => {
+                        s.classList.add('active');
+                    }, idx * 250);
+                }
+            });
+
+            // 4. 纸屑庆祝动画
+            initConfetti();
+        }
+
+        function updateStreakCount() {
+            const todayStr = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
+            const lastDateStr = state.lastCompletedDate;
+            let streak = state.streak;
+
+            if (!lastDateStr) {
+                streak = 1;
+            } else {
+                const diffTime = Math.abs(new Date(todayStr) - new Date(lastDateStr));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                    streak += 1;
+                } else if (diffDays > 1) {
+                    streak = 1;
+                }
+            }
+            state.streak = streak;
+            state.lastCompletedDate = todayStr;
+        }
+
+        function exitResultToHome() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+            document.getElementById('app-status-bar').classList.remove('hidden');
+            renderLevelMap();
+        }
+
+        // ================= RESET PROGRESS =================
+        function showResetConfirmModal() {
+            const modal = document.getElementById('modal-container');
+            modal.innerHTML = `
+                <div class="modal-box">
+                    <div class="modal-icon">⚠️</div>
+                    <div class="modal-title">重置所有数据？</div>
+                    <div class="modal-desc">重置后，你的经验值、连续天数及所有关卡解锁状态将彻底清空。此操作不可逆！</div>
+                    <div class="modal-buttons">
+                        <button class="duo-btn duo-btn-red" onclick="resetAllData()">确认彻底重置</button>
+                        <button class="duo-btn duo-btn-gray" onclick="closeModal()">取消</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function resetAllData() {
+            localStorage.removeItem('morse_game_state');
+            state = {
+                xp: 0,
+                streak: 0,
+                unlockedLevel: 1,
+                lastCompletedDate: null
+            };
+            saveGameState();
+            closeModal();
+            renderLevelMap();
+        }
+
+        // 一键解锁全部关卡 (开发者调试通道)
+        function unlockAllLevelsCheat() {
+            state.unlockedLevel = levels.length;
+            state.xp = Math.max(state.xp, 100);
+            saveGameState();
+            renderLevelMap();
+            alert("🔓 所有关卡已解锁！已开启综合温习。");
+        }
+
+        // ================= KEYBOARD SHORTCUTS =================
+        document.addEventListener('keydown', (e) => {
+            // 只在答题状态下捕获键盘快捷键
+            const lessonScreen = document.getElementById('lesson-screen');
+            if (lessonScreen.classList.contains('hidden')) return;
+
+            const q = currentLesson.currentQuestion;
+            if (!q) return;
+
+            // 空格键/S键：播放音频（限听音辨字）
+            if (q.type === 'audio-to-char' && e.code === 'Space') {
+                e.preventDefault();
+                playMorseSound(q.morse);
+            }
+            if (q.type === 'audio-to-char' && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                morsePlayer.play(q.morse, 1.6);
+            }
+
+            // 数字键选择选项 (1-4)
+            if ((q.type === 'audio-to-char' || q.type === 'translation') && ['1', '2', '3', '4'].includes(e.key)) {
+                e.preventDefault();
+                const optIndex = parseInt(e.key) - 1;
+                if (q.options && q.options[optIndex]) {
+                    selectOption(q.options[optIndex]);
+                }
+            }
+
+            // 摩斯码键盘直输 (. / - / Backspace)
+            if (q.type === 'char-to-morse') {
+                if (e.key === '.' || e.key === '*') {
+                    e.preventDefault();
+                    pressMorseChar('.');
+                } else if (e.key === '-' || e.key === '_') {
+                    e.preventDefault();
+                    pressMorseChar('-');
+                } else if (e.key === 'Backspace') {
+                    e.preventDefault();
+                    pressBackspace();
+                }
+            }
+
+            // Enter 键核对或继续
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleFooterAction();
+            }
+        });
+
+        // ================= CONFETTI CELEBRATION EFFECT =================
+        let confetti = [];
+        let confettiTimer = null;
+
+        function initConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            confetti = [];
+            const colors = ['#FFC800', '#58CC02', '#1CB0F6', '#FF4B4B', '#FF8A80', '#B2FF59'];
+
+            for (let i = 0; i < 80; i++) {
+                confetti.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            if (confettiTimer) cancelAnimationFrame(confettiTimer);
+            
+            let start = Date.now();
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let remaining = false;
+
+                confetti.forEach((p, index) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - index / 3) * 15;
+
+                    if (p.y < canvas.height) {
+                        remaining = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                // 运行 3.5 秒后自动停止，或者雨落尽后停止
+                if (remaining && Date.now() - start < 3500) {
+                    confettiTimer = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            draw();
+        }
+
+        // ================= ON LOAD INITIALIZATION =================
+        window.onload = () => {
+            loadGameState();
+            renderLevelMap();
+        };
+
+        // 窗口拉伸时重新绘制地图连接线以保证精准对齐
+        window.onresize = () => {
+            renderLevelMap();
+        };
+
+    </script>
+</body>
+</html>
