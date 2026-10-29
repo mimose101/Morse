@@ -1,11 +1,4599 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=morse_learning.html">
-    <title>摩斯密码学习应用</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摩斯星球 · 用形状记住摩斯密码</title>
+    <meta name="description" content="把点划拼成字母的形状，用图形记忆法学摩斯密码。像玩游戏一样，一课一个字母。">
+    <meta name="theme-color" content="#58CC02">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2358CC02'/%3E%3Ccircle cx='32' cy='50' r='11' fill='white'/%3E%3Crect x='52' y='43' width='34' height='14' rx='7' fill='white'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+   摩斯星球 — Design tokens
+   ============================================================ */
+        :root {
+            --green: #58CC02;
+            --green-dark: #46A302;
+            --green-soft: #D7FFB8;
+            --green-ink: #3F7A00;
+            --blue: #1CB0F6;
+            --blue-dark: #1899D6;
+            --blue-soft: #DDF4FF;
+            --purple: #CE82FF;
+            --purple-dark: #A568CC;
+            --purple-soft: #F3E0FF;
+            --orange: #FF9600;
+            --orange-dark: #E08600;
+            --orange-soft: #FFF0D6;
+            --yellow: #FFC800;
+            --red: #FF4B4B;
+            --red-dark: #EA2B2B;
+            --red-soft: #FFDFE0;
+            --ink: #3C3C3C;
+            --ink-2: #777777;
+            --ink-3: #AFAFAF;
+            --line: #E5E5E5;
+            --line-soft: #F0F0F0;
+            --bg-soft: #F7F7F7;
+            --font: 'Nunito', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+            --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: var(--font);
+            color: var(--ink);
+            background: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        button {
+            font-family: inherit;
+            color: inherit;
+            border: none;
+            background: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        input,
+        textarea {
+            font-family: inherit;
+            color: inherit;
+            border: none;
+        }
+
+        svg {
+            display: block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        ::selection {
+            background: var(--green-soft);
+            color: var(--green-ink);
+        }
+
+        /* ============================================================
+   App shell
+   ============================================================ */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ---------- Sidebar ---------- */
+        .sidebar {
+            width: 252px;
+            flex-shrink: 0;
+            border-right: 2px solid var(--line);
+            padding: 22px 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background: #fff;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 4px 8px 0;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: var(--green);
+            box-shadow: 0 3px 0 var(--green-dark);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 19px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            line-height: 1.1;
+        }
+
+        .brand-sub {
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 2.2px;
+            color: var(--ink-3);
+            margin-top: 3px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 50px;
+            padding: 0 14px;
+            border-radius: 13px;
+            border: 2px solid transparent;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--ink-2);
+            transition: background .15s, color .15s;
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-soft);
+            color: var(--ink);
+        }
+
+        .nav-item.on {
+            background: var(--blue-soft);
+            border-color: #84D8FF;
+            color: var(--blue-dark);
+        }
+
+        .goal-card {
+            margin-top: auto;
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+        }
+
+        .goal-ring {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .goal-ring svg {
+            width: 46px;
+            height: 46px;
+        }
+
+        .goal-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--ink-3);
+            letter-spacing: .4px;
+        }
+
+        .goal-sub {
+            font-size: 15px;
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        .goal-sub b {
+            color: var(--orange);
+        }
+
+        .sidebar-foot {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .side-btn {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-2);
+        }
+
+        .side-btn:hover {
+            background: var(--bg-soft);
+        }
+
+        .side-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ---------- Main ---------- */
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 24px 120px;
+        }
+
+        .topstrip {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            width: 100%;
+            max-width: 660px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 4px 10px;
+            background: linear-gradient(#fff 62%, rgba(255, 255, 255, 0));
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .stat .ico {
+            width: 21px;
+            height: 21px;
+            display: grid;
+            place-items: center;
+        }
+
+        .stat .ico svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        .stat.streak .num {
+            color: var(--orange);
+        }
+
+        .stat.hearts .num {
+            color: var(--red);
+        }
+
+        .stat.gems .num {
+            color: var(--blue);
+        }
+
+        .content {
+            width: 100%;
+            max-width: 660px;
+        }
+
+        /* ============================================================
+   Home / path
+   ============================================================ */
+        .greet {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 8px 4px 4px;
+        }
+
+        .greet-hi {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: -.3px;
+        }
+
+        .greet-sub {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink-3);
+            margin-top: 5px;
+        }
+
+        .hero {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 2px solid var(--line);
+            border-radius: 20px;
+            padding: 16px 18px;
+            margin-top: 18px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .hero::after {
+            content: '·—··—·—';
+            position: absolute;
+            right: -14px;
+            bottom: -18px;
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--line-soft);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .hero-mascot {
+            width: 96px;
+            flex-shrink: 0;
+            margin: -6px -2px -12px -8px;
+        }
+
+        .hero-txt {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .hero-t {
+            font-size: 15px;
+            font-weight: 900;
+            margin-bottom: 3px;
+        }
+
+        .hero-p {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink-2);
+            line-height: 1.5;
+        }
+
+        .hero-link {
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: 900;
+            color: var(--blue-dark);
+            margin-top: 5px;
+            letter-spacing: .2px;
+        }
+
+        .hero-link:hover {
+            text-decoration: underline;
+        }
+
+        .hero .mini-btn {
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+            height: 38px;
+            padding: 0 16px;
+            border-radius: 12px;
+            background: var(--green);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 3px 0 var(--green-dark);
+        }
+
+        /* unit */
+        .unit {
+            margin-top: 30px;
+        }
+
+        .unit-head {
+            position: relative;
+            border-radius: 16px;
+            padding: 13px 18px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--c);
+            box-shadow: 0 4px 0 var(--cd);
+            overflow: hidden;
+        }
+
+        .unit-head .u-deco {
+            position: absolute;
+            right: 76px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 44px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #fff;
+            opacity: .18;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .unit-kicker {
+            font-size: 10.5px;
+            font-weight: 900;
+            letter-spacing: 1.6px;
+            opacity: .85;
+            text-transform: uppercase;
+        }
+
+        .unit-title {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: .3px;
+            margin-top: 2px;
+        }
+
+        .unit-sub {
+            font-size: 12px;
+            font-weight: 700;
+            opacity: .9;
+            margin-top: 1px;
+        }
+
+        .guide-btn {
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+            height: 34px;
+            padding: 0 14px;
+            border-radius: 11px;
+            background: rgba(255, 255, 255, .22);
+            border: 2px solid rgba(255, 255, 255, .35);
+            color: #fff;
+            font-size: 12.5px;
+            font-weight: 800;
+            transition: background .15s;
+        }
+
+        .guide-btn:hover {
+            background: rgba(255, 255, 255, .32);
+        }
+
+        .nodes {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 30px 0 6px;
+        }
+
+        .node-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            position: relative;
+        }
+
+        .node {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 6px 0 var(--green-dark);
+            transition: transform .08s, filter .15s;
+        }
+
+        .node:not(.locked):hover {
+            filter: brightness(1.05);
+        }
+
+        .node:not(.locked):active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        .node svg {
+            width: 30px;
+            height: 30px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 3.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .node .num {
+            font-size: 26px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .node.locked {
+            background: #E9E9E9;
+            box-shadow: 0 6px 0 #D4D4D4;
+            color: #B4B4B4;
+            cursor: default;
+        }
+
+        .node.locked svg {
+            stroke-width: 2.8;
+        }
+
+        .node.done {
+            background: var(--green);
+            box-shadow: 0 6px 0 var(--green-dark);
+        }
+
+        .node-wrap {
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+
+        .node-wrap.current::before {
+            content: '';
+            position: absolute;
+            inset: -9px;
+            border-radius: 50%;
+            border: 3px solid var(--green);
+            opacity: .28;
+            pointer-events: none;
+            animation: pulseRing 2s ease-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                transform: scale(.94);
+                opacity: .35;
+            }
+
+            70% {
+                transform: scale(1.14);
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .start-bubble {
+            position: absolute;
+            top: 50%;
+            left: calc(50% + 47px);
+            transform: translateY(-50%);
+            background: #fff;
+            border: 2px solid var(--line);
+            border-radius: 11px;
+            padding: 3px 12px;
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--green-ink);
+            white-space: nowrap;
+            box-shadow: 0 2px 0 var(--line);
+            animation: bobX 1.8s ease-in-out infinite;
+        }
+
+        .start-bubble::after {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 50%;
+            margin-top: -4px;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-left: 2px solid var(--line);
+            border-bottom: 2px solid var(--line);
+            transform: rotate(45deg);
+        }
+
+        @keyframes bobX {
+            0%, 100% {
+                transform: translate(0, -50%);
+            }
+
+            50% {
+                transform: translate(3px, -50%);
+            }
+        }
+
+        .node-label {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--ink-3);
+            letter-spacing: .3px;
+        }
+
+        .node-label.done {
+            color: var(--green-ink);
+        }
+
+        .unit-end {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 22px 0 4px;
+            color: var(--ink-3);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .unit-end .dotline {
+            height: 2px;
+            width: 34px;
+            background: var(--line);
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+   Page headings & cards
+   ============================================================ */
+        .page-head {
+            padding: 10px 4px 18px;
+        }
+
+        .page-title {
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: -.5px;
+        }
+
+        .page-sub {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink-3);
+            margin-top: 6px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 2px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            background: #fff;
+            box-shadow: 0 3px 0 var(--line);
+            transition: transform .12s;
+        }
+
+        .feature:hover {
+            transform: translateY(-2px);
+        }
+
+        .feature:active {
+            transform: translateY(1px);
+        }
+
+        .f-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 15px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            background: var(--c, var(--green));
+            box-shadow: 0 3px 0 var(--cd, var(--green-dark));
+            color: #fff;
+        }
+
+        .f-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .f-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .f-title {
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .f-desc {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-top: 3px;
+            line-height: 1.45;
+        }
+
+        .f-go {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-soft);
+            display: grid;
+            place-items: center;
+            color: var(--ink-3);
+        }
+
+        .f-go svg {
+            width: 17px;
+            height: 17px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sec-title {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--ink-2);
+            letter-spacing: .3px;
+            margin: 28px 4px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drill-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .drill {
+            border: 2px solid var(--line);
+            border-bottom-width: 4px;
+            border-radius: 15px;
+            padding: 14px 10px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            transition: background .12s;
+        }
+
+        .drill:hover {
+            background: #FAFAFA;
+        }
+
+        .drill:active {
+            border-bottom-width: 2px;
+            transform: translateY(2px);
+        }
+
+        .drill .d-ico {
+            height: 34px;
+            display: grid;
+            place-items: center;
+            color: var(--c, var(--green));
+        }
+
+        .drill .d-ico svg {
+            width: 28px;
+            height: 28px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .drill .d-t {
+            font-size: 13px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        /* translater */
+        .trans {
+            border: 2px solid var(--line);
+            border-radius: 18px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .trans-tabs {
+            display: flex;
+            gap: 6px;
+            padding: 12px 12px 0;
+        }
+
+        .trans-tabs button {
+            flex: 1;
+            height: 36px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--ink-2);
+            background: var(--bg-soft);
+        }
+
+        .trans-tabs button.on {
+            background: var(--blue-soft);
+            color: var(--blue-dark);
+            box-shadow: inset 0 0 0 2px #84D8FF;
+        }
+
+        .trans textarea {
+            width: 100%;
+            height: 76px;
+            resize: none;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            outline: none;
+            background: #fff;
+            line-height: 1.5;
+        }
+
+        .trans textarea::placeholder {
+            color: var(--ink-3);
+            font-weight: 600;
+        }
+
+        .trans-out {
+            border-top: 2px dashed var(--line);
+            padding: 14px 16px;
+            min-height: 66px;
+            font-family: var(--mono);
+            font-size: 15px;
+            line-height: 1.9;
+            letter-spacing: 2px;
+            color: var(--ink);
+            word-break: break-word;
+            background: #FCFCFC;
+        }
+
+        .trans-out .ph {
+            font-family: var(--font);
+            color: var(--ink-3);
+            font-size: 13px;
+            letter-spacing: 0;
+        }
+
+        .trans-out .morse-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 13px 26px;
+            letter-spacing: 0;
+            padding: 3px 0;
+        }
+
+        .mgroup {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mgroup .sym {
+            height: 11px;
+        }
+
+        .mgroup .sym.dot {
+            width: 11px;
+            height: 11px;
+        }
+
+        .mgroup .sym.dash {
+            width: 27px;
+            height: 11px;
+        }
+
+        .msep {
+            display: inline-block;
+            width: 2px;
+            height: 22px;
+            background: #DCDCDC;
+            border-radius: 2px;
+            margin: 0 2px;
+        }
+
+        .trans-actions {
+            display: flex;
+            gap: 8px;
+            padding: 0 12px 12px;
+        }
+
+        .mini-action {
+            height: 38px;
+            padding: 0 14px;
+            border-radius: 11px;
+            background: var(--bg-soft);
+            border: 2px solid var(--line);
+            border-bottom-width: 3px;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--ink-2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mini-action:hover {
+            background: #F2F2F2;
+        }
+
+        .mini-action:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+
+        .mini-action svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+        }
+
+        /* ============================================================
+   Chart
+   ============================================================ */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+            gap: 10px;
+        }
+
+        .letter-card {
+            position: relative;
+            border: 2px solid var(--line);
+            border-radius: 15px;
+            background: #fff;
+            padding: 10px 6px 9px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            transition: transform .12s, border-color .12s;
+        }
+
+        .letter-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--green);
+        }
+
+        .letter-card .lc-glyph {
+            width: 84px;
+            height: 84px;
+        }
+
+        .letter-card .lc-letter {
+            font-size: 17px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .letter-card .lc-morse {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            color: #9A9A9A;
+        }
+
+        .letter-card .lc-badge {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        .letter-card.locked .lc-glyph {
+            opacity: .72;
+        }
+
+        /* ============================================================
+   Profile
+   ============================================================ */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 15px 16px;
+        }
+
+        .stat-box .sb-k {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--ink-3);
+            letter-spacing: .6px;
+        }
+
+        .stat-box .sb-v {
+            font-size: 27px;
+            font-weight: 900;
+            margin-top: 3px;
+            line-height: 1.1;
+        }
+
+        .stat-box .sb-v small {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--ink-3);
+            margin-left: 2px;
+        }
+
+        .goal-big {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            border: 2px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            margin-top: 12px;
+        }
+
+        .goal-big .ring {
+            width: 76px;
+            height: 76px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .goal-big .ring svg {
+            width: 76px;
+            height: 76px;
+        }
+
+        .goal-big .ring b {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .setting-row span small {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--ink-3);
+            margin-top: 3px;
+            line-height: 1.4;
+        }
+
+        .switch {
+            width: 52px;
+            height: 30px;
+            border-radius: 99px;
+            background: #DDD;
+            position: relative;
+            transition: background .18s;
+            flex-shrink: 0;
+        }
+
+        .switch.on {
+            background: var(--green);
+        }
+
+        .switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+            transition: transform .18s;
+        }
+
+        .switch.on::after {
+            transform: translateX(22px);
+        }
+
+        .danger-btn {
+            width: 100%;
+            height: 46px;
+            border-radius: 13px;
+            border: 2px solid #FFC9C9;
+            color: var(--red-dark);
+            background: #FFF6F6;
+            font-size: 13.5px;
+            font-weight: 800;
+            margin-top: 22px;
+        }
+
+        .danger-btn:hover {
+            background: #FFECEC;
+        }
+
+        /* ============================================================
+   Lesson overlay
+   ============================================================ */
+        .lesson {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            animation: lessonIn .22s ease-out;
+        }
+
+        @keyframes lessonIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        .lesson-top {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 16px 20px 6px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .close-x {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: var(--ink-3);
+            flex-shrink: 0;
+        }
+
+        .close-x:hover {
+            background: var(--bg-soft);
+            color: var(--ink);
+        }
+
+        .close-x svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        .bar {
+            flex: 1;
+            height: 15px;
+            background: #E9E9E9;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .bar>i {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: var(--green);
+            border-radius: 99px;
+            transition: width .35s cubic-bezier(.4, 1.2, .6, 1);
+            position: relative;
+        }
+
+        .bar>i::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            top: 3px;
+            height: 4px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .45);
+        }
+
+        .l-hearts {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+
+        .l-hearts svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        .q-feedback {
+            margin-top: 16px;
+            border: 2px solid #FFC7C7;
+            background: #FFF7F7;
+            border-radius: 18px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            animation: alertIn .22s cubic-bezier(.3, 1.3, .6, 1);
+        }
+
+        .qf-glyph {
+            width: 118px;
+            height: 118px;
+            flex-shrink: 0;
+            background: #fff;
+            border: 2px solid #FFE2E2;
+            border-radius: 14px;
+            padding: 4px;
+        }
+
+        .qf-info {
+            flex: 0 1 auto;
+            min-width: 0;
+        }
+
+        .qf-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--red-dark);
+        }
+
+        .qf-title i {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--red);
+            color: #fff;
+            font-style: normal;
+            font-size: 12px;
+            font-weight: 900;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+        .qf-answer {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-top: 9px;
+        }
+
+        .qf-letter {
+            font-size: 32px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .qf-morse {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .qf-morse .sym {
+            background: var(--ink);
+            height: 9px;
+        }
+
+        .qf-morse .sym.dot {
+            width: 9px;
+            height: 9px;
+        }
+
+        .qf-morse .sym.dash {
+            width: 24px;
+            height: 9px;
+        }
+
+        .qf-play {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #FFD3D3;
+            color: var(--red-dark);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: transform .08s, background .12s;
+        }
+
+        .qf-play:hover {
+            background: #FFF0F0;
+        }
+
+        .qf-play:active {
+            transform: scale(.94);
+        }
+
+        .qf-play svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @keyframes alertIn {
+            from {
+                opacity: 0;
+                transform: translateY(-7px);
+            }
+        }
+
+        .lesson-body {
+            flex: 1;
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 10px 20px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .qwrap {
+            width: 100%;
+            padding: 10px 0;
+            margin: auto 0;
+            animation: fadeUp .26s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+        }
+
+        .prompt {
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: -.2px;
+            line-height: 1.35;
+            margin-bottom: 16px;
+        }
+
+        .prompt small {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ink-3);
+            letter-spacing: 0;
+            margin-top: 5px;
+        }
+
+        /* glyph stage */
+        .glyph-card {
+            background: var(--bg-soft);
+            border: 2px solid var(--line);
+            border-radius: 22px;
+            padding: 14px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 272px;
+        }
+
+        .glyph-card .glyph {
+            width: 100%;
+            max-width: 196px;
+        }
+
+        .glyph-card.shape-card {
+            animation: shapePulse 1.4s ease-out 2;
+        }
+
+        .glyph-card.shape-card .part.lit {
+            fill: var(--blue-dark);
+        }
+
+        @keyframes shapePulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(28, 176, 246, 0);
+            }
+
+            45% {
+                box-shadow: 0 0 0 6px rgba(28, 176, 246, .16);
+            }
+        }
+
+        .glyph {
+            display: block;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        .glyph .wm {
+            fill: #B5B5B5;
+        }
+
+        .glyph .part {
+            fill: var(--ink);
+            transition: fill .12s linear;
+        }
+
+        .glyph .part.lit {
+            fill: var(--green);
+        }
+
+        /* options */
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 11px;
+            margin-top: 18px;
+        }
+
+        .opt {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            min-height: 74px;
+            border: 2px solid var(--line);
+            border-bottom-width: 4px;
+            border-radius: 15px;
+            background: #fff;
+            transition: background .12s, border-color .12s;
+        }
+
+        .opt .ol {
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .opt:hover {
+            background: #F8F8F8;
+        }
+
+        .opt:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+
+        .opt.sel {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+        }
+
+        .opt.sel .ol {
+            color: var(--blue-dark);
+        }
+
+        .opt.ok {
+            border-color: var(--green);
+            background: var(--green-soft);
+        }
+
+        .opt.ok .ol {
+            color: var(--green-ink);
+        }
+
+        .opt.bad {
+            border-color: var(--red);
+            background: var(--red-soft);
+        }
+
+        .opt.bad .ol {
+            color: var(--red-dark);
+        }
+
+        /* morse display */
+        .code-box {
+            border: 2px solid #CFEAF9;
+            background: #F2FAFF;
+            border-radius: 22px;
+            min-height: 118px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            padding: 18px;
+            margin: 0 auto;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .sym {
+            display: inline-block;
+            background: var(--ink);
+            border-radius: 99px;
+            flex-shrink: 0;
+        }
+
+        .sym.dot {
+            width: 17px;
+            height: 17px;
+        }
+
+        .sym.dash {
+            width: 46px;
+            height: 17px;
+        }
+
+        .code-box .sym {
+            background: var(--blue-dark);
+            animation: symIn .25s backwards;
+            transition: background .12s, transform .12s;
+        }
+
+        .code-box .sym.lit {
+            background: #0A5C8F;
+            transform: scale(1.35);
+            box-shadow: 0 0 0 3px rgba(28, 176, 246, .22);
+        }
+
+        @keyframes symIn {
+            from {
+                transform: scale(.4);
+                opacity: 0;
+            }
+        }
+
+        /* sound */
+        .sound-box {
+            border: 2px solid var(--line);
+            background: var(--bg-soft);
+            border-radius: 22px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+            max-width: 340px;
+        }
+
+        .sound-btn {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 5px 0 var(--blue-dark);
+            transition: transform .08s;
+        }
+
+        .sound-btn:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        .sound-btn svg {
+            width: 38px;
+            height: 38px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sound-hint {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--ink-3);
+        }
+
+        .wave {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            height: 26px;
+        }
+
+        .wave i {
+            width: 4px;
+            height: 6px;
+            border-radius: 99px;
+            background: var(--blue);
+            opacity: .35;
+            transition: height .12s;
+        }
+
+        .wave.on i {
+            animation: waveUp .7s ease-in-out infinite;
+        }
+
+        .wave.on i:nth-child(2) {
+            animation-delay: .09s;
+        }
+
+        .wave.on i:nth-child(3) {
+            animation-delay: .18s;
+        }
+
+        .wave.on i:nth-child(4) {
+            animation-delay: .27s;
+        }
+
+        .wave.on i:nth-child(5) {
+            animation-delay: .36s;
+        }
+
+        .wave.on i:nth-child(6) {
+            animation-delay: .45s;
+        }
+
+        .wave.on i:nth-child(7) {
+            animation-delay: .54s;
+        }
+
+        @keyframes waveUp {
+
+            0%,
+            100% {
+                height: 6px;
+                opacity: .5;
+            }
+
+            50% {
+                height: 24px;
+                opacity: 1;
+            }
+        }
+
+        /* build */
+        .build-stage {
+            max-width: 460px;
+            margin: 0 auto;
+            border: 2px solid var(--line);
+            border-radius: 22px;
+            background: #fff;
+            padding: 18px 16px 16px;
+            box-shadow: 0 4px 0 #EFEFEF;
+        }
+
+        .build-letter {
+            width: 92px;
+            height: 92px;
+            margin: 0 auto 16px;
+            border-radius: 22px;
+            background: var(--bg-soft);
+            border: 2px solid var(--line);
+            display: grid;
+            place-items: center;
+            font-size: 54px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+
+        .slots {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 70px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .slot {
+            width: 54px;
+            height: 66px;
+            border-radius: 14px;
+            border: 2px dashed #DCDCDC;
+            background: #FAFAFA;
+            display: grid;
+            place-items: center;
+            transition: border-color .15s, background .15s;
+        }
+
+        .slot.next {
+            border-color: #7FD3FA;
+            background: var(--blue-soft);
+            animation: slotPulse 1.7s ease-out infinite;
+        }
+
+        .slot.filled {
+            border-style: solid;
+            border-color: var(--line);
+            background: #fff;
+        }
+
+        .slot .sym {
+            animation: symPop .16s ease-out;
+        }
+
+        .slot .sym.dot {
+            width: 22px;
+            height: 22px;
+        }
+
+        .slot .sym.dash {
+            width: 44px;
+            height: 14px;
+        }
+
+        .slot.ok {
+            border-color: var(--green);
+            background: var(--green-soft);
+        }
+
+        .slot.bad {
+            border-color: var(--red);
+            background: var(--red-soft);
+        }
+
+        @keyframes slotPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(28, 176, 246, .35);
+            }
+
+            70% {
+                box-shadow: 0 0 0 7px rgba(28, 176, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(28, 176, 246, 0);
+            }
+        }
+
+        @keyframes symPop {
+            from {
+                transform: scale(.4);
+                opacity: 0;
+            }
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+        }
+
+        .key {
+            height: 66px;
+            border-radius: 16px;
+            border: 2px solid var(--line);
+            border-bottom-width: 4px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            transition: transform .08s, background .12s;
+        }
+
+        .key:hover {
+            background: #FAFAFA;
+        }
+
+        .key:active {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
+            background: #F2F2F2;
+        }
+
+        .key .sym {
+            width: 20px;
+            height: 20px;
+        }
+
+        .key .sym.dash {
+            width: 38px;
+            height: 14px;
+        }
+
+        .key em {
+            font-style: normal;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--ink-3);
+            letter-spacing: .5px;
+        }
+
+        .key.del {
+            width: 64px;
+            padding: 0;
+        }
+
+        .key.del:disabled {
+            opacity: .4;
+            cursor: default;
+        }
+
+        .key.del:disabled:active {
+            transform: none;
+            border-bottom-width: 4px;
+            background: #fff;
+        }
+
+        .key.del svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--ink-3);
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* type */
+        .letter-keys {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            max-width: 470px;
+            margin: 18px auto 0;
+        }
+
+        .letter-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .letter-key {
+            width: min(42px, calc((100% - 45px) / 10));
+            height: 46px;
+            border-radius: 11px;
+            border: 2px solid var(--line);
+            border-bottom-width: 3px;
+            background: #fff;
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--ink);
+            display: grid;
+            place-items: center;
+            transition: background .12s, border-color .12s, transform .08s;
+        }
+
+        .letter-key:hover {
+            background: #F7F7F7;
+        }
+
+        .letter-key:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+
+        .letter-key.sel {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+            color: var(--blue-dark);
+        }
+
+        @media (min-width: 900px) {
+            .letter-key {
+                height: 50px;
+                font-size: 17px;
+            }
+        }
+
+        /* learn */
+        .learn-wrap {
+            text-align: center;
+            padding: 4px 0;
+        }
+
+        .kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 28px;
+            padding: 0 14px;
+            border-radius: 99px;
+            background: var(--green-soft);
+            color: var(--green-ink);
+            font-size: 11.5px;
+            font-weight: 900;
+            letter-spacing: 1.4px;
+            margin-bottom: 14px;
+        }
+
+        .learn-card {
+            background: #fff;
+            border: 2px solid var(--line);
+            border-radius: 24px;
+            padding: 16px;
+            max-width: 300px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 3px 0 var(--line);
+        }
+
+        .learn-card .glyph {
+            max-width: 230px;
+            margin: 0 auto;
+        }
+
+        .learn-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .learn-meta .lm-letter {
+            font-size: 46px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .learn-meta .lm-sep {
+            width: 2px;
+            height: 34px;
+            background: var(--line);
+            border-radius: 2px;
+        }
+
+        .learn-meta .lm-morse {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+        }
+
+        .learn-meta .lm-morse .sym {
+            background: var(--ink);
+        }
+
+        .learn-hint {
+            max-width: 380px;
+            margin: 14px auto 0;
+            font-size: 13.5px;
+            font-weight: 700;
+            line-height: 1.6;
+            color: var(--ink-2);
+        }
+
+        .play-inline {
+            margin-top: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            height: 38px;
+            padding: 0 16px;
+            border-radius: 12px;
+            border: 2px solid var(--line);
+            border-bottom-width: 3px;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--ink-2);
+            background: #fff;
+        }
+
+        .play-inline:hover {
+            background: var(--bg-soft);
+        }
+
+        .play-inline svg {
+            width: 15px;
+            height: 15px;
+            fill: currentColor;
+        }
+
+        /* footer */
+        .lesson-foot {
+            border-top: 2px solid var(--line);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            transition: background .15s, border-color .15s;
+            background: #fff;
+            min-height: 84px;
+        }
+
+        .lesson-foot .inner {
+            width: 100%;
+            max-width: 720px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .lesson-foot.ok {
+            background: var(--green-soft);
+            border-color: #A6E96C;
+        }
+
+        .lesson-foot.bad {
+            background: var(--red-soft);
+            border-color: #FFB3B3;
+        }
+
+        .fb {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .fb-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #fff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .lesson-foot.ok .fb-icon {
+            color: var(--green);
+        }
+
+        .lesson-foot.bad .fb-icon {
+            color: var(--red);
+        }
+
+        .fb-title {
+            font-size: 19px;
+            font-weight: 900;
+            line-height: 1.15;
+        }
+
+        .lesson-foot.ok .fb-title {
+            color: var(--green-ink);
+        }
+
+        .lesson-foot.bad .fb-title {
+            color: var(--red-dark);
+        }
+
+        .fb-sub {
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-top: 2px;
+            opacity: .85;
+        }
+
+        .lesson-foot.ok .fb-sub {
+            color: var(--green-ink);
+        }
+
+        .lesson-foot.bad .fb-sub {
+            color: var(--red-dark);
+        }
+
+        .fb-answer {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex-shrink: 0;
+            background: #fff;
+            border: 2px solid #FFC2C2;
+            border-radius: 14px;
+            padding: 5px 10px 5px 5px;
+            box-shadow: 0 2px 0 #FFD6D6;
+            transition: transform .08s, background .12s;
+        }
+
+        .fb-answer:hover {
+            background: #FFF9F9;
+        }
+
+        .fb-answer:active {
+            transform: scale(.96);
+        }
+
+        .fb-answer .fa-glyph {
+            width: 62px;
+            height: 62px;
+            flex-shrink: 0;
+        }
+
+        .fb-answer .wm {
+            fill: #A8A8A8;
+        }
+
+        .fb-answer .fa-txt {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .fb-answer .fa-letter {
+            font-size: 21px;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--ink);
+        }
+
+        .fb-answer .fa-morse {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fb-answer .fa-morse .sym {
+            background: var(--ink);
+            height: 7px;
+        }
+
+        .fb-answer .fa-morse .sym.dot {
+            width: 7px;
+            height: 7px;
+        }
+
+        .fb-answer .fa-morse .sym.dash {
+            width: 18px;
+            height: 7px;
+        }
+
+        .fb-answer .fa-sound {
+            color: var(--ink-3);
+            margin-left: 2px;
+            display: grid;
+            place-items: center;
+        }
+
+        .fb-answer .fa-sound svg {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .fb-answer .part.lit {
+            fill: var(--green);
+        }
+
+        .fb-glyph {
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+            opacity: .9;
+        }
+
+        /* buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 48px;
+            padding: 0 22px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: .6px;
+            transition: transform .06s, filter .15s;
+            flex-shrink: 0;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .btn.big {
+            width: 100%;
+            max-width: 720px;
+            height: 52px;
+            font-size: 16px;
+        }
+
+        .btn.primary {
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 4px 0 var(--green-dark);
+        }
+
+        .btn.primary:disabled {
+            background: #E5E5E5;
+            color: #AFAFAF;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .btn.primary:not(:disabled):active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .btn.green {
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 4px 0 var(--green-dark);
+        }
+
+        .btn.red {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 4px 0 var(--red-dark);
+        }
+
+        .btn.green:active,
+        .btn.red:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .btn.ghost {
+            background: #fff;
+            border: 2px solid var(--line);
+            border-bottom-width: 4px;
+            color: var(--ink-2);
+        }
+
+        .lesson-foot.ok .btn.big,
+        .lesson-foot.bad .btn.big {
+            width: auto;
+            min-width: 132px;
+            max-width: none;
+            padding: 0 28px;
+        }
+
+        /* done screen */
+        .done-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            overflow-y: auto;
+            animation: fadeUp .3s ease-out;
+        }
+
+        .done-mascot {
+            width: 160px;
+            margin-bottom: 6px;
+            animation: floaty 3s ease-in-out infinite;
+        }
+
+        @keyframes floaty {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-7px);
+            }
+        }
+
+        .done-h {
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: -.5px;
+            margin-top: 6px;
+        }
+
+        .done-p {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink-3);
+            margin-top: 6px;
+        }
+
+        .done-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 22px;
+        }
+
+        .ds {
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 10px 8px;
+            background: #fff;
+        }
+
+        .ds span {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: var(--ink-3);
+        }
+
+        .ds b {
+            display: block;
+            font-size: 21px;
+            font-weight: 900;
+            margin-top: 2px;
+        }
+
+        .ds.gold b {
+            color: var(--yellow);
+        }
+
+        .ds.green b {
+            color: var(--green);
+        }
+
+        .ds.blue b {
+            color: var(--blue);
+        }
+
+        .done-actions {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .confetti {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .done-screen {
+            position: relative;
+            z-index: 2;
+        }
+
+        .confetti i {
+            position: absolute;
+            top: -24px;
+            width: 9px;
+            height: 15px;
+            border-radius: 3px;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(540deg);
+                opacity: .2;
+            }
+        }
+
+        /* modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(20, 20, 20, .45);
+            backdrop-filter: blur(3px);
+            animation: fadeIn .15s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+        }
+
+        .sheet {
+            width: 100%;
+            max-width: 460px;
+            max-height: 84vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+            animation: sheetIn .22s cubic-bezier(.3, 1.3, .6, 1);
+        }
+
+        @keyframes sheetIn {
+            from {
+                transform: translateY(18px) scale(.97);
+                opacity: 0;
+            }
+        }
+
+        .sheet-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .sheet-title {
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .sheet-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-soft);
+            display: grid;
+            place-items: center;
+            color: var(--ink-2);
+            flex-shrink: 0;
+        }
+
+        .sheet-close svg {
+            width: 17px;
+            height: 17px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        .guide-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+        }
+
+        .guide-item {
+            border: 2px solid var(--line);
+            border-radius: 13px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .guide-item:hover {
+            background: var(--bg-soft);
+        }
+
+        .guide-item .gi-glyph {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+        }
+
+        .guide-item .gi-l {
+            font-size: 17px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .guide-item .gi-m {
+            font-family: var(--mono);
+            font-size: 10.5px;
+            letter-spacing: 1.5px;
+            color: var(--ink-3);
+            margin-top: 3px;
+        }
+
+        .detail-glyph {
+            width: 190px;
+            margin: 4px auto 0;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .detail-row .dr-l {
+            font-size: 40px;
+            font-weight: 900;
+        }
+
+        .detail-row .dr-m {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+        }
+
+        .detail-hint {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-2);
+            line-height: 1.6;
+            margin-top: 12px;
+            padding: 0 6px;
+        }
+
+        .confirm-txt {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink-2);
+            line-height: 1.6;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .confirm-actions .btn {
+            flex: 1;
+            padding: 0 12px;
+        }
+
+        /* tabbar mobile */
+        .tabbar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #fff;
+            border-top: 2px solid var(--line);
+            z-index: 50;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .tabbar button {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--ink-3);
+        }
+
+        .tabbar button svg {
+            width: 23px;
+            height: 23px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .tabbar button.on {
+            color: var(--blue-dark);
+        }
+
+        /* mascot */
+        .mascot svg {
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        .mascot .eye {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: blinkEye 5.5s infinite;
+        }
+
+        @keyframes blinkEye {
+
+            0%, 92%, 100% {
+                transform: scaleY(1);
+            }
+
+            95% {
+                transform: scaleY(.1);
+            }
+        }
+
+        /* empty */
+        .how-demo {
+            border: 2px solid var(--line);
+            border-radius: 18px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+            background: #fff;
+        }
+
+        .how-demo .hd-glyph {
+            width: 126px;
+            flex-shrink: 0;
+        }
+
+        .how-demo .hd-t {
+            font-size: 32px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .how-demo .hd-m {
+            display: flex;
+            gap: 6px;
+            margin-top: 9px;
+        }
+
+        .how-demo .hd-c {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink-3);
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        .how-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .hs-n {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--green-soft);
+            color: var(--green-ink);
+            font-size: 13px;
+            font-weight: 900;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .hs-t {
+            font-size: 14.5px;
+            font-weight: 900;
+        }
+
+        .hs-p {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--ink-2);
+            line-height: 1.65;
+            margin-top: 2px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--ink-3);
+            font-weight: 700;
+            font-size: 13.5px;
+        }
+
+        /* responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                padding: 0 16px 100px;
+            }
+
+            .tabbar {
+                display: flex;
+            }
+
+            .topstrip {
+                padding: 12px 2px 8px;
+                gap: 16px;
+            }
+
+            .greet-hi {
+                font-size: 23px;
+            }
+
+            .hero {
+                padding: 14px;
+            }
+
+            .hero-mascot {
+                width: 74px;
+                margin: -4px 0 -8px -6px;
+            }
+
+            .prompt {
+                font-size: 20px;
+            }
+
+            .lesson-body {
+                padding: 6px 16px 18px;
+                justify-content: flex-start;
+                padding-top: 14px;
+            }
+
+            .lesson-foot {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .lesson-foot .inner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .fb {
+                width: 100%;
+            }
+
+            .btn.big {
+                width: 100%;
+            }
+
+            .lesson-foot.ok .btn.big,
+            .lesson-foot.bad .btn.big {
+                width: 100%;
+                max-width: none;
+            }
+
+            .lesson-top {
+                padding: 14px 16px 4px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .drill-grid {
+                gap: 8px;
+            }
+
+            .drill {
+                padding: 12px 6px;
+            }
+
+            .chart-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .start-bubble {
+                font-size: 11px;
+                padding: 2px 9px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <p>正在跳转到 <a href="morse_learning.html">摩斯密码学习应用</a>...</p>
+    <div class="app">
+        <!-- ============ 侧边栏 ============ -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">
+                    <svg width="26" height="26" viewBox="0 0 26 26">
+                        <circle cx="7" cy="13" r="3.6" fill="#fff" />
+                        <rect x="13" y="10.1" width="10" height="5.8" rx="2.9" fill="#fff" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="brand-name">摩斯星球</div>
+                    <div class="brand-sub">MORSE PLANET</div>
+                </div>
+            </div>
+
+            <nav class="nav" id="sideNav">
+                <button class="nav-item on" data-view="home">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z" />
+                        <path d="M20 18v3H6.5A2.5 2.5 0 0 1 4 18.5" />
+                    </svg>
+                    学习
+                </button>
+                <button class="nav-item" data-view="practice">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="8.5" />
+                        <circle cx="12" cy="12" r="3.5" />
+                    </svg>
+                    练习
+                </button>
+                <button class="nav-item" data-view="chart">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+                        <rect x="13.5" y="3.5" width="7" height="7" rx="2" />
+                        <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+                        <rect x="13.5" y="13.5" width="7" height="7" rx="2" />
+                    </svg>
+                    字母表
+                </button>
+                <button class="nav-item" data-view="me">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4.5 20c.7-3.6 3.8-5.5 7.5-5.5s6.8 1.9 7.5 5.5" />
+                    </svg>
+                    我的
+                </button>
+            </nav>
+
+            <div class="goal-card">
+                <div class="goal-ring">
+                    <svg viewBox="0 0 46 46">
+                        <circle cx="23" cy="23" r="19" fill="none" stroke="#EDEDED" stroke-width="5" />
+                        <circle id="goalRing" cx="23" cy="23" r="19" fill="none" stroke="#FFC800" stroke-width="5"
+                            stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"
+                            transform="rotate(-90 23 23)" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="goal-title">今日目标</div>
+                    <div class="goal-sub"><b id="goalXp">0</b> / 50 XP</div>
+                </div>
+            </div>
+
+            <div class="sidebar-foot">
+                <button class="side-btn" onclick="lpHowTo()">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M9.5 9.2a2.6 2.6 0 1 1 3.4 2.5c-.6.2-.9.8-.9 1.4v.4" />
+                        <path d="M12 17.2h.01" />
+                    </svg>
+                    图形记忆法
+                </button>
+                <button class="side-btn" id="muteBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z" />
+                        <path d="M15.5 9a4 4 0 0 1 0 6" />
+                        <path d="M18 6.5a7.5 7.5 0 0 1 0 11" />
+                    </svg>
+                    <span id="muteLabel">音效开启</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ============ 主区域 ============ -->
+        <main class="main">
+            <div class="topstrip">
+                <div class="stat streak" title="连续学习天数">
+                    <span class="ico">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 22c4 0 7-2.8 7-6.6 0-3-1.8-5.2-3.4-7C14.2 6.8 13 4.9 13 3c-3 1.6-4.2 4.3-4.4 6.4-.1 1.4.3 2.4.3 2.4S7.4 10.6 6.6 9c-.8 1.3-1.6 3.3-1.6 5.4C5 19.2 8 22 12 22Z"
+                                fill="#FF9600" stroke="none" />
+                        </svg>
+                    </span>
+                    <span class="num" id="streakNum">0</span>
+                </div>
+                <div class="stat hearts" title="爱心">
+                    <span class="ico">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 20.5S4 15.8 4 10.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6c0 5.2-8 9.9-8 9.9Z"
+                                fill="#FF4B4B" stroke="none" />
+                        </svg>
+                    </span>
+                    <span class="num" id="heartNum">5</span>
+                </div>
+                <div class="stat gems" title="经验值">
+                    <span class="ico">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M7 3h10l4 6-9 12L3 9l4-6Z" fill="#1CB0F6" stroke="none" />
+                        </svg>
+                    </span>
+                    <span class="num" id="xpNum">0</span>
+                </div>
+            </div>
+
+            <div class="content">
+                <section id="viewHome" class="view"></section>
+                <section id="viewPractice" class="view hidden"></section>
+                <section id="viewChart" class="view hidden"></section>
+                <section id="viewMe" class="view hidden"></section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============ 移动端底栏 ============ -->
+    <nav class="tabbar" id="tabbar">
+        <button class="on" data-view="home">
+            <svg viewBox="0 0 24 24">
+                <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z" />
+                <path d="M20 18v3H6.5A2.5 2.5 0 0 1 4 18.5" />
+            </svg>
+            学习
+        </button>
+        <button data-view="practice">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8.5" />
+                <circle cx="12" cy="12" r="3.5" />
+            </svg>
+            练习
+        </button>
+        <button data-view="chart">
+            <svg viewBox="0 0 24 24">
+                <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+                <rect x="13.5" y="3.5" width="7" height="7" rx="2" />
+                <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+                <rect x="13.5" y="13.5" width="7" height="7" rx="2" />
+            </svg>
+            字母表
+        </button>
+        <button data-view="me">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4.5 20c.7-3.6 3.8-5.5 7.5-5.5s6.8 1.9 7.5 5.5" />
+            </svg>
+            我的
+        </button>
+    </nav>
+
+    <!-- ============ 课程浮层 ============ -->
+    <div id="lesson" class="lesson hidden"></div>
+
+    <!-- ============ 弹窗 ============ -->
+    <div id="modal" class="modal hidden"></div>
+
+    <script>
+        /* ============================================================
+           1. 数据
+           ============================================================ */
+        const MORSE = {
+            A: '.-', B: '-...', C: '-.-.', D: '-..', E: '.', F: '..-.',
+            G: '--.', H: '....', I: '..', J: '.---', K: '-.-', L: '.-..',
+            M: '--', N: '-.', O: '---', P: '.--.', Q: '--.-', R: '.-.',
+            S: '...', T: '-', U: '..-', V: '...-', W: '.--', X: '-..-',
+            Y: '-.--', Z: '--..'
+        };
+
+        const MORSE_EXTRA = {
+            '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+            '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+            '.': '.-.-.-', ',': '--..--', '?': '..--..', '!': '-.-.--', '/': '-..-.',
+            '(': '-.--.', ')': '-.--.-', ':': '---...', ';': '-.-.-.', '=': '-...-',
+            '+': '.-.-.', '-': '-....-', '_': '..--.-', '"': '.-..-.', '$': '...-..-',
+            '@': '.--.-.', "'": '.----.'
+        };
+
+        const MORSE_ALL = Object.assign({}, MORSE, MORSE_EXTRA);
+        const ALL_LETTERS = Object.keys(MORSE);
+        const KEY_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+
+        // 图形记忆坐标：[类型(0点/1划), left%, top%, 旋转°]
+        const G = {
+            A: [[0, 50, 26, 0], [1, 50, 62, -90]],
+            B: [[1, 22, 50, 0], [0, 60, 25, 0], [0, 60, 50, 0], [0, 62, 75, 0]],
+            C: [[1, 53, 25, -90], [0, 17, 37, 0], [1, 21, 61, 0], [0, 55, 74, 0]],
+            D: [[1, 22, 51, 0], [0, 60, 27, 0], [0, 60, 73, 0]],
+            E: [[0, 26, 48, 0]],
+            F: [[0, 26, 25, 0], [0, 84, 25, 0], [1, 26, 52, 0], [0, 80, 50, 0]],
+            G: [[1, 19, 47, 0], [1, 55, 74, -90], [0, 61, 52, 0]],
+            H: [[0, 20, 25, 0], [0, 80, 25, 0], [0, 20, 75, 0], [0, 80, 75, 0]],
+            I: [[0, 50, 25, 0], [0, 50, 75, 0]],
+            J: [[0, 74, 7, 0], [1, 74, 35, 0], [1, 74, 71, 0], [1, 20, 81, -90]],
+            K: [[1, 73, 29, 38], [0, 39, 50, 0], [1, 72, 67, -30]],
+            L: [[0, 26, 24, 0], [1, 26, 49, 0], [0, 26, 74, 0], [0, 82, 74, 0]],
+            M: [[1, 16, 50, 0], [1, 84, 50, 0]],
+            N: [[1, 20, 50, 0], [0, 78, 71, 0]],
+            O: [[1, 18, 49, 0], [1, 50, 76, -90], [1, 82, 49, 0]],
+            P: [[0, 22, 40, 0], [1, 51, 25, -90], [1, 54, 54, -90], [0, 83, 39, 0]],
+            Q: [[1, 23, 32, 40], [1, 25, 67, -40], [0, 64, 74, 0], [1, 84, 49, 0]],
+            R: [[0, 21, 28, 0], [1, 22, 60, -180], [0, 79, 73, 0]],
+            S: [[0, 50, 25, 0], [0, 50, 50, 0], [0, 50, 75, 0]],
+            T: [[1, 50, 26, -90]],
+            U: [[0, 21, 27, 0], [0, 79, 27, 0], [1, 50, 72, -90]],
+            V: [[0, 19, 26, 0], [0, 83, 26, 0], [0, 50, 71, 0], [1, 50, 88, -90]],
+            W: [[0, 14, 26, 0], [1, 42, 50, 11], [1, 80, 50, 11]],
+            X: [[1, 29, 32, -29], [0, 68, 35, 0], [0, 33, 62, 0], [1, 70, 66, -29]],
+            Y: [[1, 26, 33, -27], [0, 50, 53, 0], [1, 74, 33, 27], [1, 50, 77, 0]],
+            Z: [[1, 46, 25, -90], [1, 54, 49, 36], [0, 20, 74, 0], [0, 85, 74, 0]]
+        };
+
+        // Roboto Black 轮廓（Apache License 2.0），26 个字母，单位为 2048/em
+        const GLYPH_PATHS = {"A":{"w":1395,"d":"M728 1150 373 0H-4L531 1456H770ZM1022 0 666 1150 620 1456H862L1400 0ZM1008 543V272H261V543Z"},"B":{"w":1322,"d":"M705 619H330L328 849H632Q714 849 763.0 867.5Q812 886 834.5 922.0Q857 958 857 1012Q857 1074 834.0 1112.0Q811 1150 761.5 1167.5Q712 1185 634 1185H462V0H111V1456H634Q769 1456 875.0 1431.5Q981 1407 1055.5 1357.0Q1130 1307 1169.0 1231.5Q1208 1156 1208 1054Q1208 965 1170.0 887.0Q1132 809 1043.5 760.5Q955 712 802 710ZM691 0H245L365 270H691Q763 270 806.5 292.5Q850 315 869.5 352.5Q889 390 889 436Q889 492 870.5 533.0Q852 574 812.0 596.5Q772 619 705 619H410L412 849H765L847 757Q993 763 1078.5 716.0Q1164 669 1201.0 592.0Q1238 515 1238 431Q1238 288 1176.5 192.0Q1115 96 993.0 48.0Q871 0 691 0Z"},"C":{"w":1344,"d":"M939 493H1289Q1282 341 1207.0 225.0Q1132 109 999.5 44.5Q867 -20 687 -20Q541 -20 426.5 29.0Q312 78 232.5 170.0Q153 262 111.5 393.0Q70 524 70 688V767Q70 931 113.5 1062.5Q157 1194 237.5 1286.5Q318 1379 431.0 1428.0Q544 1477 682 1477Q872 1477 1003.0 1409.0Q1134 1341 1206.0 1222.5Q1278 1104 1291 953H941Q939 1035 913.0 1090.5Q887 1146 831.0 1174.0Q775 1202 682 1202Q617 1202 569.0 1178.0Q521 1154 489.0 1102.0Q457 1050 441.5 967.5Q426 885 426 769V688Q426 572 440.0 490.0Q454 408 485.0 356.0Q516 304 565.5 279.5Q615 255 687 255Q767 255 822.0 280.5Q877 306 907.0 358.5Q937 411 939 493Z"},"D":{"w":1325,"d":"M584 0H261L263 270H584Q684 270 753.5 318.0Q823 366 859.5 461.5Q896 557 896 697V760Q896 865 875.5 944.5Q855 1024 815.0 1077.5Q775 1131 715.5 1158.0Q656 1185 579 1185H255V1456H579Q727 1456 850.5 1405.5Q974 1355 1064.5 1261.5Q1155 1168 1204.5 1040.5Q1254 913 1254 758V697Q1254 543 1204.5 415.0Q1155 287 1065.0 194.0Q975 101 852.5 50.5Q730 0 584 0ZM462 1456V0H111V1456Z"},"E":{"w":1146,"d":"M1113 270V0H337V270ZM462 1456V0H111V1456ZM1013 878V617H337V878ZM1116 1456V1185H337V1456Z"},"F":{"w":1120,"d":"M462 1456V0H111V1456ZM1028 850V580H362V850ZM1085 1456V1185H362V1456Z"},"G":{"w":1396,"d":"M1302 778V180Q1265 139 1188.5 92.5Q1112 46 996.0 13.0Q880 -20 723 -20Q578 -20 460.0 26.5Q342 73 257.5 163.5Q173 254 127.5 385.5Q82 517 82 687V768Q82 938 128.0 1070.0Q174 1202 257.5 1292.5Q341 1383 454.5 1430.0Q568 1477 704 1477Q905 1477 1031.0 1413.5Q1157 1350 1222.0 1238.5Q1287 1127 1301 981H964Q954 1053 926.5 1103.5Q899 1154 848.0 1180.5Q797 1207 716 1207Q653 1207 601.5 1180.0Q550 1153 514.0 1098.5Q478 1044 458.5 962.0Q439 880 439 770V687Q439 578 457.5 496.0Q476 414 513.5 359.5Q551 305 609.5 277.5Q668 250 748 250Q804 250 844.0 259.5Q884 269 910.5 283.5Q937 298 951 311V537H707V778Z"},"H":{"w":1439,"d":"M1092 878V608H345V878ZM462 1456V0H111V1456ZM1328 1456V0H978V1456Z"},"I":{"w":619,"d":"M484 1456V0H134V1456Z"},"J":{"w":1151,"d":"M690 457V1456H1040V457Q1040 311 973.5 204.0Q907 97 793.5 38.5Q680 -20 539 -20Q393 -20 279.5 29.0Q166 78 101.5 180.0Q37 282 37 440H389Q389 366 406.0 324.5Q423 283 456.5 266.5Q490 250 539 250Q587 250 620.5 274.5Q654 299 672.0 345.5Q690 392 690 457Z"},"K":{"w":1310,"d":"M462 1456V0H111V1456ZM1331 1456 767 718 437 357 373 679 584 999 898 1456ZM916 0 540 656 813 857 1331 0Z"},"L":{"w":1110,"d":"M1073 270V0H337V270ZM462 1456V0H111V1456Z"},"M":{"w":1795,"d":"M285 1456H571L896 443L1221 1456H1507L1012 0H780ZM111 1456H407L462 340V0H111ZM1385 1456H1682V0H1330V340Z"},"N":{"w":1438,"d":"M1327 1456V0H977L462 906V0H111V1456H462L977 550V1456Z"},"O":{"w":1414,"d":"M1343 757V698Q1343 531 1296.5 398.5Q1250 266 1165.0 172.5Q1080 79 964.0 29.5Q848 -20 708 -20Q567 -20 450.5 29.5Q334 79 248.5 172.5Q163 266 116.5 398.5Q70 531 70 698V757Q70 924 116.5 1057.0Q163 1190 247.5 1283.5Q332 1377 448.5 1426.5Q565 1476 706 1476Q846 1476 962.5 1426.5Q1079 1377 1164.0 1283.5Q1249 1190 1296.0 1057.0Q1343 924 1343 757ZM987 698V759Q987 867 968.5 949.5Q950 1032 914.0 1088.0Q878 1144 825.5 1172.5Q773 1201 706 1201Q636 1201 584.0 1172.5Q532 1144 497.0 1088.0Q462 1032 444.5 949.5Q427 867 427 759V698Q427 591 444.5 508.5Q462 426 497.5 369.0Q533 312 585.5 283.0Q638 254 708 254Q775 254 827.0 283.0Q879 312 914.5 369.0Q950 426 968.5 508.5Q987 591 987 698Z"},"P":{"w":1334,"d":"M692 494H330V765H692Q766 765 812.0 790.0Q858 815 879.5 859.5Q901 904 901 960Q901 1020 879.5 1071.0Q858 1122 812.0 1153.5Q766 1185 692 1185H462V0H111V1456H692Q867 1456 993.5 1392.0Q1120 1328 1188.0 1216.5Q1256 1105 1256 962Q1256 821 1188.0 716.0Q1120 611 993.5 552.5Q867 494 692 494Z"},"Q":{"w":1414,"d":"M923 240 1329 -82 1111 -266 712 56ZM1346 757V698Q1346 531 1299.5 398.5Q1253 266 1167.5 172.5Q1082 79 966.0 29.5Q850 -20 710 -20Q569 -20 452.5 29.5Q336 79 250.5 172.5Q165 266 118.5 398.5Q72 531 72 698V757Q72 924 118.5 1057.0Q165 1190 249.5 1283.5Q334 1377 450.5 1426.5Q567 1476 708 1476Q848 1476 964.5 1426.5Q1081 1377 1166.5 1283.5Q1252 1190 1299.0 1057.0Q1346 924 1346 757ZM989 698V759Q989 867 970.5 949.5Q952 1032 916.0 1088.0Q880 1144 827.5 1172.5Q775 1201 708 1201Q638 1201 586.0 1172.5Q534 1144 499.0 1088.0Q464 1032 446.5 949.5Q429 867 429 759V698Q429 591 446.5 508.5Q464 426 499.5 369.0Q535 312 587.5 283.0Q640 254 710 254Q777 254 829.0 283.0Q881 312 916.5 369.0Q952 426 970.5 508.5Q989 591 989 698Z"},"R":{"w":1336,"d":"M111 1456H684Q852 1456 976.0 1406.0Q1100 1356 1167.5 1258.0Q1235 1160 1235 1016Q1235 891 1196.0 807.0Q1157 723 1087.5 668.5Q1018 614 926 579L811 514H330L328 785H684Q751 785 795.0 809.0Q839 833 861.5 877.5Q884 922 884 984Q884 1047 861.0 1092.0Q838 1137 793.5 1161.0Q749 1185 684 1185H462V0H111ZM908 0 586 644 958 646 1284 15V0Z"},"S":{"w":1282,"d":"M861 387Q861 421 851.0 448.5Q841 476 814.0 500.0Q787 524 736.5 548.5Q686 573 604 600Q508 632 419.0 672.5Q330 713 260.0 767.5Q190 822 149.0 895.5Q108 969 108 1067Q108 1161 150.0 1236.5Q192 1312 267.5 1365.5Q343 1419 445.0 1447.5Q547 1476 668 1476Q828 1476 950.5 1420.5Q1073 1365 1142.5 1263.5Q1212 1162 1212 1024H863Q863 1079 840.5 1121.0Q818 1163 773.0 1187.0Q728 1211 660 1211Q594 1211 549.0 1191.0Q504 1171 481.0 1137.5Q458 1104 458 1064Q458 1031 476.5 1004.5Q495 978 529.5 955.0Q564 932 613.5 911.0Q663 890 725 870Q841 833 931.5 787.5Q1022 742 1084.5 684.5Q1147 627 1179.5 554.0Q1212 481 1212 389Q1212 291 1174.0 215.0Q1136 139 1065.0 86.5Q994 34 895.0 7.0Q796 -20 674 -20Q562 -20 453.5 8.5Q345 37 257.0 96.5Q169 156 116.5 249.5Q64 343 64 472H416Q416 408 433.0 364.0Q450 320 483.0 293.5Q516 267 564.0 255.5Q612 244 674 244Q741 244 782.0 263.5Q823 283 842.0 315.5Q861 348 861 387Z"},"T":{"w":1292,"d":"M816 1456V0H465V1456ZM1254 1456V1185H37V1456Z"},"U":{"w":1361,"d":"M901 1456H1252V505Q1252 335 1181.0 217.5Q1110 100 982.0 40.0Q854 -20 681 -20Q510 -20 380.5 40.0Q251 100 178.5 217.5Q106 335 106 505V1456H458V505Q458 415 484.0 358.5Q510 302 560.0 276.0Q610 250 681 250Q753 250 802.0 276.0Q851 302 876.0 358.5Q901 415 901 505Z"},"V":{"w":1354,"d":"M662 343 965 1456H1358L867 0H613ZM387 1456 690 343 741 0H484L-4 1456Z"},"W":{"w":1780,"d":"M447 132 737 1456H910L1004 1343L695 0H504ZM370 1456 615 122 552 0H331L22 1456ZM1163 129 1406 1456H1753L1444 0H1224ZM1035 1456 1332 124 1272 0H1081L765 1345L863 1456Z"},"X":{"w":1308,"d":"M416 1456 654 972 892 1456H1292L886 734L1303 0H899L654 493L409 0H4L422 734L15 1456Z"},"Y":{"w":1286,"d":"M375 1456 643 824 912 1456H1290L822 523V0H465V523L-4 1456Z"},"Z":{"w":1250,"d":"M1201 270V0H147V270ZM1194 1276 321 0H67V185L950 1456H1194ZM1081 1456V1185H62V1456Z"}};
+
+        const HINTS = {
+            A: '一个点站在尖顶，一道横划垫在脚下——A 的骨架就是它的电码。',
+            B: '一竖立在左边，三个点堆出上下两个圆弧。',
+            C: '一横起笔，点与划沿左侧围出 C 的弯。',
+            D: '一道直背，两点收口，D 的半圆就合上了。',
+            E: '只有一个点——最短的码，最轻的一声。',
+            F: '两点在上，一竖一横，正好是 F 的两条横线。',
+            G: '两道划围出弧线，一点落在开口的内侧。',
+            H: '四个点站在四角，撑起 H 的两根竖柱。',
+            I: '上下各一点，连成字母 I 的中轴。',
+            J: '三点连成一竖，一划在底部弯出钩。',
+            K: '一点居中，两划张开——K 的交点与两条腿。',
+            L: '点划向下排成竖线，末点向右一拐，就是 L 的直角。',
+            M: '两道竖划分列左右，撑起 M 的双肩。',
+            N: '一横在上，一点落在右下角。',
+            O: '三道划首尾相接，围成 O 的圆。',
+            P: '点在左，两划立成竖，P 的圆环有了边框。',
+            Q: '两划斜撑成圈，一点藏在里面——那是 Q 的尾巴。',
+            R: '一点一划，画出 R 的肩与腿。',
+            S: '三个点排成一线，S 的脊梁。',
+            T: '一道横划，就是 T 的横梁。',
+            U: '两点在上，横划兜底，U 的杯子形状。',
+            V: '三点收拢，一划托底，V 的尖。',
+            W: '一点两划，层层落下，W 的三个尖。',
+            X: '两划交叉，两点分列，X 的中心。',
+            Y: '一划分叉，一点居中，Y 的三岔口。',
+            Z: '一横、一斜、两点，Z 的三笔折线。'
+        };
+
+        const THEMES = {
+            green: { c: '#58CC02', d: '#46A302' },
+            blue: { c: '#1CB0F6', d: '#1899D6' },
+            purple: { c: '#CE82FF', d: '#A568CC' },
+            orange: { c: '#FF9600', d: '#E08600' },
+            teal: { c: '#00C2A8', d: '#00A38D' },
+            pink: { c: '#FF6FA5', d: '#E0568A' },
+            red: { c: '#FF4B4B', d: '#EA2B2B' }
+        };
+
+        const UNITS = [
+            {
+                id: 'u1', theme: 'green', level: 1, title: '嘀 · 哒', subtitle: '最短的两种信号',
+                letters: ['E', 'T', 'A', 'N'], lessons: [
+                    { title: '第一声', news: ['E', 'T'] },
+                    { title: '点划成形', news: ['A', 'N'] },
+                    { title: '单元回顾', news: [], review: true }
+                ]
+            },
+            {
+                id: 'u2', theme: 'blue', level: 1, title: '竖直与交错', subtitle: '两点、两划的家族',
+                letters: ['I', 'M', 'S', 'U'], lessons: [
+                    { title: '两点连线', news: ['I', 'M'] },
+                    { title: '对称之美', news: ['S', 'U'] },
+                    { title: '单元回顾', news: [], review: true }
+                ]
+            },
+            {
+                id: 'u3', theme: 'purple', level: 2, title: '折线与圆弧', subtitle: '开始出现拐角',
+                letters: ['R', 'W', 'D', 'K'], lessons: [
+                    { title: '转折之处', news: ['R', 'W'] },
+                    { title: '直背与交点', news: ['D', 'K'] },
+                    { title: '单元回顾', news: [], review: true }
+                ]
+            },
+            {
+                id: 'u4', theme: 'orange', level: 2, title: '围成一圈', subtitle: '弧线、包围与对称',
+                letters: ['G', 'O', 'H', 'V'], lessons: [
+                    { title: '圆的轮廓', news: ['G', 'O'] },
+                    { title: '四角与尖底', news: ['H', 'V'] },
+                    { title: '单元回顾', news: [], review: true }
+                ]
+            },
+            {
+                id: 'u5', theme: 'teal', level: 3, title: '易混字母', subtitle: '细看每一条笔画',
+                letters: ['F', 'L', 'P', 'J'], lessons: [
+                    { title: '错落的横', news: ['F', 'L'] },
+                    { title: '环与钩', news: ['P', 'J'] },
+                    { title: '单元回顾', news: [], review: true }
+                ]
+            },
+            {
+                id: 'u6', theme: 'pink', level: 3, title: '最后一块拼图', subtitle: '把 26 个字母收齐',
+                letters: ['B', 'X', 'C', 'Y', 'Z', 'Q'], lessons: [
+                    { title: '双弧与交叉', news: ['B', 'X'] },
+                    { title: '开口与分叉', news: ['C', 'Y'] },
+                    { title: '折线与尾音', news: ['Z', 'Q'] }
+                ]
+            },
+            {
+                id: 'u7', theme: 'red', level: 4, title: '大师之路', subtitle: '只听声音，也能认出它们',
+                letters: [], lessons: [
+                    { title: '速度辨认', news: [], review: true, hard: true },
+                    { title: '纯听训练', news: [], review: true, hard: true },
+                    { title: '结业挑战', news: [], review: true, hard: true }
+                ]
+            }
+        ];
+
+        /* ============================================================
+           2. 工具
+           ============================================================ */
+        const $ = (s, r = document) => r.querySelector(s);
+        const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+        function shuffle(a) {
+            const arr = a.slice();
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        const pick = a => a[Math.floor(Math.random() * a.length)];
+
+        function todayKey(d) {
+            const t = d ? new Date(d) : new Date();
+            return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+        }
+        function dayKey(offset) {
+            const t = new Date();
+            t.setDate(t.getDate() + offset);
+            return todayKey(t);
+        }
+        function greeting() {
+            const h = new Date().getHours();
+            if (h < 6) return '夜深了';
+            if (h < 11) return '早上好';
+            if (h < 14) return '中午好';
+            if (h < 18) return '下午好';
+            return '晚上好';
+        }
+        function fmtTime(sec) {
+            const m = Math.floor(sec / 60), s = sec % 60;
+            return m + ':' + String(s).padStart(2, '0');
+        }
+        function pretty(m) {
+            return m.split('').map(c => c === '.' ? '·' : '—').join(' ');
+        }
+        function esc(s) {
+            return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        }
+
+        /* ============================================================
+           3. 状态
+           ============================================================ */
+        const KEY = 'morse_planet_v1';
+        const DEF = { xp: 0, streak: 0, lastDay: null, todayKey: null, todayXp: 0, done: {}, muted: false, unlockAll: false, miss: {} };
+
+        let S = loadState();
+        let ALL = [];
+        let session = null;
+        let fbTimer = null;
+        let glyphTimer = null;
+        let currentView = 'home';
+        let transMode = 'enc';
+        let transText = '';
+        let transOutText = '';
+
+        function loadState() {
+            let s = Object.assign({}, DEF);
+            try {
+                const raw = localStorage.getItem(KEY);
+                if (raw) s = Object.assign(s, JSON.parse(raw));
+            } catch (e) { /* ignore */ }
+            const t = todayKey();
+            if (s.todayKey !== t) { s.todayKey = t; s.todayXp = 0; }
+            if (s.lastDay && s.lastDay !== t && s.lastDay !== dayKey(-1)) s.streak = 0;
+            return s;
+        }
+        function saveState() {
+            try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ }
+        }
+
+        function knownNow() {
+            const set = new Set();
+            ALL.forEach(l => { if (S.done[l.id]) l.news.forEach(x => set.add(x)); });
+            return Array.from(set);
+        }
+        function firstIncomplete() {
+            return ALL.find(l => !S.done[l.id]);
+        }
+        function doneCount() {
+            return ALL.filter(l => S.done[l.id]).length;
+        }
+
+        /* ============================================================
+           4. 声音
+           ============================================================ */
+        const Sound = {
+            ctx: null,
+            ensure() {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return null;
+                if (!this.ctx) this.ctx = new AC();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                return this.ctx;
+            },
+            tone(dur, freq, type, vol, delay) {
+                if (S.muted) return;
+                const ctx = this.ensure();
+                if (!ctx) return;
+                const t0 = ctx.currentTime + (delay || 0);
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = type || 'sine';
+                o.frequency.value = freq || 660;
+                const v = vol == null ? 0.15 : vol;
+                g.gain.setValueAtTime(0.0001, t0);
+                g.gain.linearRampToValueAtTime(v, t0 + 0.008);
+                g.gain.setValueAtTime(v, t0 + Math.max(0.02, dur - 0.014));
+                g.gain.linearRampToValueAtTime(0.0001, t0 + dur);
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.start(t0);
+                o.stop(t0 + dur + 0.04);
+            },
+            morseLength(code) {
+                const u = 0.085;
+                let t = 0;
+                for (const c of code) t += ((c === '.' ? 1 : 3) * u) + u;
+                return t * 1000;
+            },
+            morse(code, cb) {
+                const u = 0.085;
+                let t = 0;
+                Array.from(code).forEach((c, i) => {
+                    const d = (c === '.' ? 1 : 3) * u;
+                    this.tone(d, 660, 'sine', 0.15, t);
+                    if (cb) setTimeout(() => cb(i, c), t * 1000);
+                    t += d + u;
+                });
+                return t * 1000;
+            },
+            correct() {
+                this.tone(0.08, 660, 'sine', 0.16, 0);
+                this.tone(0.08, 880, 'sine', 0.16, 0.09);
+                this.tone(0.14, 1120, 'sine', 0.14, 0.18);
+            },
+            wrong() {
+                this.tone(0.16, 220, 'sawtooth', 0.08, 0);
+                this.tone(0.18, 160, 'sawtooth', 0.08, 0.18);
+            },
+            tap() { this.tone(0.035, 540, 'sine', 0.06, 0); },
+            pop() { this.tone(0.07, 960, 'sine', 0.1, 0); }
+        };
+
+        /* ============================================================
+           5. 图形
+           ============================================================ */
+        // 与原编辑器一致：点划坐标相对「字母文本盒」（advance × 240），画布 300×300
+        const GLYPH_EM = 200;            // 原编辑器字号
+        const GLYPH_BOX_H = 240;         // line-height normal = 1.2em
+        const GLYPH_TOP = 30;            // 240 高的盒子在 300 画布中垂直居中
+        const GLYPH_BASE = GLYPH_TOP + 190.04;  // Roboto winAscent 1946/2048 × 200
+        const GLYPH_SCALE = GLYPH_EM / 2048;
+
+        function glyphHTML(letter, opts) {
+            opts = opts || {};
+            const g = GLYPH_PATHS[letter];
+            if (!g) return '';
+            const w = g.w * GLYPH_SCALE;
+            const dx = (300 - w) / 2;
+            const wm = opts.watermark
+                ? `<g class="wm" transform="translate(${dx.toFixed(3)},${GLYPH_BASE}) scale(${GLYPH_SCALE.toFixed(7)},${(-GLYPH_SCALE).toFixed(7)})"><path d="${g.d}"/></g>`
+                : '';
+            const parts = (G[letter] || []).map(p => {
+                const type = p[0];
+                const cx = dx + w * p[1] / 100;
+                const cy = GLYPH_TOP + GLYPH_BOX_H * p[2] / 100;
+                const x = cx.toFixed(2), y = cy.toFixed(2);
+                if (type === 0) return `<circle class="part dot" cx="${x}" cy="${y}" r="15"/>`;
+                return `<rect class="part dash" x="${(cx - 15).toFixed(2)}" y="${(cy - 40).toFixed(2)}" width="30" height="80" rx="4" transform="rotate(${p[3]} ${x} ${y})"/>`;
+            }).join('');
+            return `<svg class="glyph" viewBox="0 0 300 300" role="img" aria-label="字母 ${letter} 的图形记忆">${wm}<g class="parts">${parts}</g></svg>`;
+        }
+
+        function morseSymbols(letter, stagger) {
+            return Array.from(MORSE[letter]).map((c, i) => {
+                const style = stagger ? ` style="animation-delay:${i * 60}ms"` : '';
+                return `<span class="sym ${c === '.' ? 'dot' : 'dash'}"${style}></span>`;
+            }).join('');
+        }
+
+        function mascot(size, mood) {
+            const mouth = mood === 'sad'
+                ? '<path d="M88 109q12-11 24 0" fill="none" stroke="#3C3C3C" stroke-width="4.4" stroke-linecap="round"/>'
+                : '<path d="M88 100q12 12 24 0" fill="none" stroke="#3C3C3C" stroke-width="4.4" stroke-linecap="round"/>';
+            return `<div class="mascot" style="width:${typeof size === 'number' ? size + 'px' : size}">
+            <svg viewBox="0 0 200 200">
+              <ellipse cx="100" cy="180" rx="44" ry="7" fill="#3C3C3C" opacity=".07"/>
+              <path d="M44 103q-16 9-18 24" fill="none" stroke="#3C3C3C" stroke-width="4.6" stroke-linecap="round"/>
+              <path d="M156 103q16 9 18 24" fill="none" stroke="#3C3C3C" stroke-width="4.6" stroke-linecap="round"/>
+              <rect x="78" y="145" width="44" height="31" rx="11" fill="#D7DBE0" stroke="#3C3C3C" stroke-width="4.6"/>
+              <path d="M80 155h40M80 166h40" stroke="#3C3C3C" stroke-width="3.2" stroke-linecap="round" opacity=".5"/>
+              <circle cx="100" cy="88" r="58" fill="#FFD84D" stroke="#3C3C3C" stroke-width="4.8"/>
+              <circle cx="62" cy="102" r="8" fill="#FF9F1C" opacity=".3"/>
+              <circle cx="138" cy="102" r="8" fill="#FF9F1C" opacity=".3"/>
+              <ellipse class="eye" cx="82" cy="86" rx="7.5" ry="9.5" fill="#3C3C3C"/>
+              <ellipse class="eye" cx="118" cy="86" rx="7.5" ry="9.5" fill="#3C3C3C"/>
+              <circle cx="84.5" cy="82" r="2.5" fill="#fff"/>
+              <circle cx="120.5" cy="82" r="2.5" fill="#fff"/>
+              ${mouth}
+              <circle cx="152" cy="34" r="4" fill="#58CC02" opacity=".65"/>
+              <rect x="160" y="46" width="12" height="4.5" rx="2.2" fill="#1CB0F6" opacity=".65"/>
+              <circle cx="40" cy="42" r="3" fill="#FF4B4B" opacity=".5"/>
+            </svg></div>`;
+        }
+
+        /* ============================================================
+           6. 壳层 / 路由
+           ============================================================ */
+        const ICON = {
+            lock: '<svg viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10.5" rx="3"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>',
+            check: '<svg viewBox="0 0 24 24"><path d="m4.5 12.5 5 5L19.5 7"/></svg>',
+            arrow: '<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
+            play: '<svg viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M7 4.5v15l13-7.5-13-7.5Z"/></svg>',
+            speaker: '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
+            back: '<svg viewBox="0 0 24 24"><path d="M20 6H9.5L4 12l5.5 6H20z"/><path d="M11.5 9.5 15 12l-3.5 2.5"/></svg>',
+            x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+            shape: '<svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.2"/><rect x="13" y="5" width="8" height="6" rx="2"/><rect x="4" y="15" width="7" height="5" rx="2"/><circle cx="17" cy="17" r="3"/></svg>',
+            code: '<svg viewBox="0 0 24 24"><path d="m8 8-4 4 4 4M16 8l4 4-4 4"/><path d="M13 5l-2 14"/></svg>',
+            mix: '<svg viewBox="0 0 24 24"><path d="M4 7h4l8 10h4M4 17h4l2-2.6M20 7h-4l-2 2.6"/><path d="m17 4 3 3-3 3M17 14l3 3-3 3"/></svg>',
+            ear: '<svg viewBox="0 0 24 24"><path d="M7 9a5 5 0 1 1 10 0c0 2.2-1.3 3.3-2.6 4.4C13.2 14.5 12.5 16 12.5 18a2.5 2.5 0 0 1-4.6 1.3"/><path d="M10 9a2 2 0 1 1 4 0c0 1.2-1 1.8-1 3"/></svg>',
+            bolt: '<svg viewBox="0 0 24 24"><path d="M13 3 5.5 13H11l-1 8 7.5-10H12l1-8Z"/></svg>'
+        };
+
+        function go(name) {
+            currentView = name;
+            updateTop();
+            ['home', 'practice', 'chart', 'me'].forEach(v => {
+                const el = $('#view' + v.charAt(0).toUpperCase() + v.slice(1));
+                if (el) el.classList.toggle('hidden', v !== name);
+            });
+            $$('#sideNav .nav-item, #tabbar button').forEach(b => {
+                b.classList.toggle('on', b.dataset.view === name);
+            });
+            if (name === 'home') renderHome();
+            if (name === 'practice') renderPractice();
+            if (name === 'chart') renderChart();
+            if (name === 'me') renderMe();
+            window.scrollTo(0, 0);
+        }
+
+        function updateTop() {
+            $('#streakNum').textContent = S.streak;
+            $('#xpNum').textContent = S.xp;
+            $('#goalXp').textContent = S.todayXp;
+            const p = Math.min(1, S.todayXp / 50);
+            const ring = $('#goalRing');
+            if (ring) ring.setAttribute('stroke-dashoffset', String(119.4 * (1 - p)));
+            const ml = $('#muteLabel');
+            if (ml) ml.textContent = S.muted ? '音效关闭' : '音效开启';
+        }
+
+        /* ============================================================
+           7. 首页
+           ============================================================ */
+        function renderHome() {
+            const known = knownNow();
+            const next = firstIncomplete();
+            const dn = doneCount();
+
+            let html = `<div class="greet">
+              <div>
+                <div class="greet-hi">${greeting()}，报务员</div>
+                <div class="greet-sub">已点亮 ${known.length} / 26 个字母 · 完成 ${dn} / ${ALL.length} 课</div>
+              </div>
+            </div>`;
+
+            if (dn === 0) {
+                html += `<div class="hero">
+                  <div class="hero-mascot">${mascot('100%')}</div>
+                  <div class="hero-txt" onclick="lpHowTo()" style="cursor:pointer">
+                    <div class="hero-t">让字母自己长成形状</div>
+                    <div class="hero-p">每个字母都由它自己的点划拼成，看一遍就记住了。</div>
+                    <div class="hero-link">图形记忆法 · 怎么玩 →</div>
+                  </div>
+                  <button class="mini-btn" onclick="lpStartNext()">开始</button>
+                </div>`;
+            }
+
+            UNITS.forEach((u, ui) => {
+                const t = THEMES[u.theme];
+                const uDone = u.lessons.filter(l => S.done[l.id]).length;
+                const deco = u.letters.length ? pretty(MORSE[u.letters[0]]) : '· — · —';
+                html += `<section class="unit">
+                  <div class="unit-head" style="--c:${t.c};--cd:${t.d}">
+                    <div class="u-deco">${deco}</div>
+                    <div>
+                      <div class="unit-kicker">第 ${ui + 1} 单元 · ${uDone}/${u.lessons.length}</div>
+                      <div class="unit-title">${u.title}</div>
+                      <div class="unit-sub">${u.subtitle}</div>
+                    </div>
+                    <button class="guide-btn" onclick="lpUnitGuide('${u.id}')">指南</button>
+                  </div>
+                  <div class="nodes">${u.lessons.map((l, li) => nodeHTML(u, l, li, ui)).join('')}</div>
+                </section>`;
+            });
+
+            if (dn === ALL.length) {
+                html += `<div class="hero" style="margin-top:26px">
+                  <div class="hero-mascot">${mascot('100%')}</div>
+                  <div class="hero-txt">
+                    <div class="hero-t">26 个字母全部点亮</div>
+                    <div class="hero-p">去练习场做几组听音训练，把耳朵也练起来。</div>
+                  </div>
+                </div>`;
+            }
+
+            $('#viewHome').innerHTML = html;
+
+            if (dn > 0 && next) {
+                const node = $('#viewHome .node-wrap.current');
+                if (node) setTimeout(() => node.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+            }
+        }
+
+        function nodeHTML(u, l, li, ui) {
+            const done = !!S.done[l.id];
+            const next = firstIncomplete();
+            const cur = !!(next && next.id === l.id);
+            const unlocked = done || cur || S.unlockAll;
+            const offs = ui % 2 === 0 ? [0, 62, 98] : [98, 62, 0];
+            const off = u.lessons.length === 3 ? offs[li] : 0;
+            const inner = done ? ICON.check : (unlocked ? `<span class="num">${li + 1}</span>` : ICON.lock);
+            return `<div class="node-row" style="transform:translateX(${off}px)">
+              ${cur ? '<div class="start-bubble">开始</div>' : ''}
+              <div class="node-wrap ${cur ? 'current' : ''}">
+                <button class="node ${done ? 'done' : ''} ${unlocked ? '' : 'locked'}" ${unlocked ? `onclick="lpStartLesson('${l.id}')"` : ''}>${inner}</button>
+              </div>
+              <div class="node-label ${done ? 'done' : ''}">第 ${li + 1} 课 · ${l.title}</div>
+            </div>`;
+        }
+
+        /* ============================================================
+           8. 练习场
+           ============================================================ */
+        function renderPractice() {
+            const known = knownNow();
+            const n = known.length;
+            $('#viewPractice').innerHTML = `
+            <div class="page-head">
+              <div class="page-title">练习场</div>
+              <div class="page-sub">不掉爱心，随便练。当前掌握 ${n} 个字母。</div>
+            </div>
+
+            <button class="feature" data-drill="sound" style="--c:#FF9600;--cd:#E08600;width:100%">
+              <div class="f-icon">${ICON.ear}</div>
+              <div class="f-body" style="text-align:left">
+                <div class="f-title">听音训练</div>
+                <div class="f-desc">只放声音，不看形状。10 题一组，练耳朵。</div>
+              </div>
+              <div class="f-go">${ICON.arrow}</div>
+            </button>
+
+            <div class="sec-title">专项练习</div>
+            <div class="drill-grid">
+              <button class="drill" data-drill="shape" style="--c:#58CC02">
+                <div class="d-ico">${ICON.shape}</div>
+                <div class="d-t">看形识字</div>
+              </button>
+              <button class="drill" data-drill="morse" style="--c:#1CB0F6">
+                <div class="d-ico">${ICON.code}</div>
+                <div class="d-t">读码识字</div>
+              </button>
+              <button class="drill" data-drill="mix" style="--c:#CE82FF">
+                <div class="d-ico">${ICON.mix}</div>
+                <div class="d-t">混合复习</div>
+              </button>
+            </div>
+
+            <div class="sec-title">翻译器</div>
+            <div class="trans">
+              <div class="trans-tabs">
+                <button data-tmode="enc" class="${transMode === 'enc' ? 'on' : ''}">文字 → 摩斯</button>
+                <button data-tmode="dec" class="${transMode === 'dec' ? 'on' : ''}">摩斯 → 文字</button>
+              </div>
+              <textarea id="transIn" placeholder="${transMode === 'enc' ? '输入英文，例如 SOS' : '输入电码，例如 ... --- ...'}">${esc(transText)}</textarea>
+              <div class="trans-out" id="transOut"></div>
+              <div class="trans-actions">
+                <button class="mini-action" data-tplay>${ICON.play} 播放</button>
+                <button class="mini-action" data-tcopy>复制结果</button>
+              </div>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--ink-3);margin:10px 4px 0;line-height:1.6">
+              支持 26 个字母、数字与常用标点；空格分隔单词，播放时会自动留出间隔。
+            </div>`;
+            updateTransOut();
+        }
+
+        function updateTransOut() {
+            const el = $('#transOut');
+            if (!el) return;
+            if (!transText.trim()) {
+                transOutText = '';
+                el.innerHTML = '<span class="ph">结果会显示在这里</span>';
+                return;
+            }
+            if (transMode === 'enc') {
+                const out = textToMorse(transText);
+                transOutText = out;
+                if (!out) {
+                    el.innerHTML = '<span class="ph">没有可转换的字符</span>';
+                    return;
+                }
+                el.innerHTML = '<div class="morse-line">' + out.split(' / ').map(word => {
+                    return word.split(' ').filter(Boolean).map(code => {
+                        return '<span class="mgroup">' + Array.from(code).map(c => `<span class="sym ${c === '.' ? 'dot' : 'dash'}"></span>`).join('') + '</span>';
+                    }).join('');
+                }).join('<span class="msep"></span>') + '</div>';
+            } else {
+                const out = morseToText(transText);
+                transOutText = out;
+                el.textContent = out || '—';
+            }
+        }
+
+        function textToMorse(text) {
+            const words = text.toUpperCase().split(/\s+/).filter(Boolean);
+            const res = [];
+            words.forEach(w => {
+                const letters = [];
+                Array.from(w).forEach(ch => { if (MORSE_ALL[ch]) letters.push(MORSE_ALL[ch]); });
+                if (letters.length) res.push(letters.join(' '));
+            });
+            return res.join(' / ');
+        }
+
+        function morseToText(code) {
+            const rev = {};
+            Object.keys(MORSE_ALL).forEach(k => { rev[MORSE_ALL[k]] = k; });
+            return code.trim().split(/\s*\/\s*/).map(w => {
+                return w.trim().split(/\s+/).filter(Boolean).map(c => rev[c] || '?').join('');
+            }).join(' ');
+        }
+
+        function playCodeString(str) {
+            const u = 0.085;
+            let t = 0;
+            for (let i = 0; i < str.length; i++) {
+                const c = str[i];
+                if (c === '.' || c === '-') {
+                    const d = (c === '.' ? 1 : 3) * u;
+                    Sound.tone(d, 660, 'sine', 0.15, t);
+                    t += d + u;
+                } else if (c === '/') {
+                    t += 6 * u;
+                } else if (c === ' ') {
+                    t += 2 * u;
+                }
+            }
+        }
+
+        /* ============================================================
+           9. 字母表
+           ============================================================ */
+        function renderChart() {
+            const known = knownNow();
+            $('#viewChart').innerHTML = `
+            <div class="page-head">
+              <div class="page-title">字母表</div>
+              <div class="page-sub">${known.length} / 26 已点亮 · 点按任意字母查看细节</div>
+            </div>
+            <div class="chart-grid">
+              ${ALL_LETTERS.map(l => `
+                <button class="letter-card ${known.includes(l) ? '' : 'locked'}" onclick="lpLetterDetail('${l}')">
+                  ${known.includes(l) ? '<i class="lc-badge"></i>' : ''}
+                  <div class="lc-glyph">${glyphHTML(l, { watermark: true })}</div>
+                  <div class="lc-letter">${l}</div>
+                  <div class="lc-morse">${MORSE[l]}</div>
+                </button>`).join('')}
+            </div>
+            <div class="sec-title">数字与符号</div>
+            <div class="chart-grid">
+              ${Object.keys(MORSE_EXTRA).slice(0, 12).map(k => `
+                <button class="letter-card" onclick="lpCharDetail('${esc(k)}')">
+                  <div class="lc-letter" style="font-size:22px;height:54px;display:grid;place-items:center">${esc(k)}</div>
+                  <div class="lc-morse">${MORSE_EXTRA[k]}</div>
+                </button>`).join('')}
+            </div>`;
+        }
+
+        /* ============================================================
+           10. 我的
+           ============================================================ */
+        function renderMe() {
+            const known = knownNow();
+            const dn = doneCount();
+            const accs = Object.keys(S.done).map(k => S.done[k].acc).filter(v => typeof v === 'number');
+            const avg = accs.length ? Math.round(accs.reduce((a, b) => a + b, 0) / accs.length) : 0;
+            const p = Math.min(1, S.todayXp / 50);
+            $('#viewMe').innerHTML = `
+            <div class="page-head">
+              <div class="page-title">我的</div>
+              <div class="page-sub">一个小小的报务员档案</div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-box"><div class="sb-k">总经验</div><div class="sb-v" style="color:#FFC800">${S.xp}<small>XP</small></div></div>
+              <div class="stat-box"><div class="sb-k">连续学习</div><div class="sb-v" style="color:#FF9600">${S.streak}<small>天</small></div></div>
+              <div class="stat-box"><div class="sb-k">已点亮字母</div><div class="sb-v" style="color:#58CC02">${known.length}<small>/ 26</small></div></div>
+              <div class="stat-box"><div class="sb-k">平均正确率</div><div class="sb-v" style="color:#1CB0F6">${avg}<small>%</small></div></div>
+            </div>
+            <div class="goal-big">
+              <div class="ring">
+                <svg viewBox="0 0 76 76">
+                  <circle cx="38" cy="38" r="32" fill="none" stroke="#EDEDED" stroke-width="7"/>
+                  <circle cx="38" cy="38" r="32" fill="none" stroke="#FFC800" stroke-width="7" stroke-linecap="round"
+                    stroke-dasharray="201" stroke-dashoffset="${201 * (1 - p)}" transform="rotate(-90 38 38)"/>
+                </svg>
+                <b>${Math.round(p * 100)}%</b>
+              </div>
+              <div>
+                <div style="font-size:15px;font-weight:900">今日目标</div>
+                <div style="font-size:13px;font-weight:700;color:var(--ink-3);margin-top:3px">已完成 ${S.todayXp} XP，目标 50 XP</div>
+                <div style="font-size:12px;font-weight:700;color:var(--ink-3);margin-top:8px">完成 ${dn} / ${ALL.length} 课 · 平均正确率 ${avg}%</div>
+              </div>
+            </div>
+
+            <div class="sec-title">设置</div>
+            <div class="setting-row">
+              <span>解锁全部课程<small>打开后可以自由进入任意一课，方便跳学或复习</small></span>
+              <button class="switch ${S.unlockAll ? 'on' : ''}" id="unlockSwitch" aria-label="解锁全部课程"></button>
+            </div>
+            <div class="setting-row">
+              <span>课程音效</span>
+              <button class="switch ${S.muted ? '' : 'on'}" id="soundSwitch" aria-label="切换音效"></button>
+            </div>
+            <button class="danger-btn" onclick="lpResetConfirm()">重置全部学习进度</button>
+            <div style="font-size:11.5px;font-weight:700;color:var(--ink-3);text-align:center;margin-top:16px;line-height:1.7">
+              摩斯星球 · 图形记忆法<br>点划位置取自 morse_position_editor.html
+            </div>`;
+        }
+
+        /* ============================================================
+           11. 弹窗
+           ============================================================ */
+        function openModal(html) {
+            const m = $('#modal');
+            m.innerHTML = `<div class="sheet">${html}</div>`;
+            m.classList.remove('hidden');
+        }
+        function closeModal() {
+            const m = $('#modal');
+            m.classList.add('hidden');
+            m.innerHTML = '';
+        }
+        function lpCloseModal() { closeModal(); }
+
+        function lpHowTo() {
+            openModal(`
+              <div class="sheet-head">
+                <div class="sheet-title">图形记忆法</div>
+                <button class="sheet-close" onclick="lpCloseModal()">${ICON.x}</button>
+              </div>
+              <div class="how-demo">
+                <div class="hd-glyph">${glyphHTML('A', { watermark: true })}</div>
+                <div>
+                  <div class="hd-t">A</div>
+                  <div class="hd-m">${morseSymbols('A')}</div>
+                  <div class="hd-c">点作尖顶，横划作底座。</div>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="hs-n">1</div>
+                <div>
+                  <div class="hs-t">电码本来就是一组点划</div>
+                  <div class="hs-p">A 是 · —，T 是 —，S 是 · · ·。每个字母都有自己固定的节奏。</div>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="hs-n">2</div>
+                <div>
+                  <div class="hs-t">把点划摆成字母的形状</div>
+                  <div class="hs-p">点放在该是笔尖的位置，划放在该是横梁的位置。摆好之后，图形和字母严丝合缝。</div>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="hs-n">3</div>
+                <div>
+                  <div class="hs-t">形状替代死记硬背</div>
+                  <div class="hs-p">看到一个形状，脑子里先浮现字母，再顺带想起它的点划。26 个字母，就这样一个个点亮。</div>
+                </div>
+              </div>
+              ${firstIncomplete()
+                ? `<button class="btn primary big" onclick="lpCloseModal();lpStartNext()">开始学习</button>`
+                : `<button class="btn primary big" onclick="lpCloseModal();go('chart')">查看字母表</button>`}`);
+        }
+
+        function lpUnitGuide(id) {
+            const u = UNITS.find(x => x.id === id);
+            if (!u) return;
+            const letters = u.letters.length ? u.letters : knownNow();
+            openModal(`
+              <div class="sheet-head">
+                <div class="sheet-title">${u.title} · 指南</div>
+                <button class="sheet-close" onclick="lpCloseModal()">${ICON.x}</button>
+              </div>
+              <div style="font-size:12.5px;font-weight:700;color:var(--ink-3);margin:-6px 0 14px">${u.subtitle} · 点按听发音</div>
+              ${letters.length ? `<div class="guide-list">
+                ${letters.map(l => `<button class="guide-item" onclick="lpLetterDetail('${l}')">
+                  <div class="gi-glyph">${glyphHTML(l, { watermark: true })}</div>
+                  <div>
+                    <div class="gi-l">${l}</div>
+                    <div class="gi-m">${MORSE[l]}</div>
+                  </div>
+                </button>`).join('')}
+              </div>` : '<div class="empty">这个单元还没有新字母，去挑战一下吧。</div>'}`);
+        }
+
+        function lpLetterDetail(l) {
+            openModal(`
+              <div class="sheet-head">
+                <div class="sheet-title">字母 ${l}</div>
+                <button class="sheet-close" onclick="lpCloseModal()">${ICON.x}</button>
+              </div>
+              <div class="detail-glyph">${glyphHTML(l, { watermark: true })}</div>
+              <div class="detail-row">
+                <div class="dr-l">${l}</div>
+                <div class="dr-m">${morseSymbols(l)}</div>
+              </div>
+              <p class="detail-hint">${HINTS[l] || ''}</p>
+              <button class="btn primary big" style="margin-top:18px" onclick="lpPlayLetter('${l}')">${ICON.play} 听一遍</button>`);
+        }
+
+        function lpCharDetail(ch) {
+            openModal(`
+              <div class="sheet-head">
+                <div class="sheet-title">字符 ${esc(ch)}</div>
+                <button class="sheet-close" onclick="lpCloseModal()">${ICON.x}</button>
+              </div>
+              <div style="text-align:center;font-size:78px;font-weight:900;line-height:1.2;padding:14px 0 6px">${esc(ch)}</div>
+              <div style="text-align:center;font-size:20px;letter-spacing:6px;font-family:var(--mono)">${MORSE_EXTRA[ch]}</div>`);
+        }
+
+        function lpPlayLetter(l) {
+            Sound.morse(MORSE[l]);
+        }
+
+        function lpResetConfirm() {
+            openModal(`
+              <div class="sheet-head">
+                <div class="sheet-title">重置进度？</div>
+                <button class="sheet-close" onclick="lpCloseModal()">${ICON.x}</button>
+              </div>
+              <div class="confirm-txt">所有已点亮的字母、XP 和连续天数都会被清空，这个操作无法撤销。</div>
+              <div class="confirm-actions">
+                <button class="btn ghost" onclick="lpCloseModal()">再想想</button>
+                <button class="btn red" onclick="lpDoReset()">确认重置</button>
+              </div>`);
+        }
+        function lpDoReset() {
+            try { localStorage.removeItem(KEY); } catch (e) { }
+            location.reload();
+        }
+
+        /* ============================================================
+           12. 课程引擎
+           ============================================================ */
+        function makeQ(type, letter, known) {
+            const q = { type: type, letter: letter };
+            if (type !== 'build' && type !== 'type') q.options = buildOptions(letter, known);
+            return q;
+        }
+
+        function buildOptions(letter, known) {
+            const pool = known.filter(l => l !== letter && MORSE[l]);
+            let distract = shuffle(pool).slice(0, 3);
+            if (distract.length < 3) {
+                const rest = shuffle(ALL_LETTERS.filter(l => l !== letter && distract.indexOf(l) < 0));
+                distract = distract.concat(rest.slice(0, 3 - distract.length));
+            }
+            return shuffle([letter].concat(distract));
+        }
+
+        // 题型由易到难：看形 → 读码 → 听音 → 拼码 → 默写
+        const TYPE_ORDER = ['shape', 'morse', 'sound', 'build', 'type'];
+        const TYPE_RANK = { shape: 0, morse: 1, sound: 2, build: 3, type: 4 };
+
+        function lessonPlan(lesson) {
+            const L = lesson.level || 1;
+            if (!lesson.news.length) {
+                // 纯复习课 / 挑战课
+                return { review: L >= 4 ? 16 : 12 };
+            }
+            // 新字母固定走完 5 种题型，复习题随难度增加
+            return { review: L >= 3 ? 4 : (L === 2 ? 2 : 0) };
+        }
+
+        // 按错题次数加权抽取，薄弱的字母出现得更频繁
+        function pickWeighted(pool) {
+            if (!pool.length) return null;
+            const weights = pool.map(l => 1 + (S.miss[l] || 0));
+            const total = weights.reduce((a, b) => a + b, 0);
+            let r = Math.random() * total;
+            for (let i = 0; i < pool.length; i++) {
+                r -= weights[i];
+                if (r <= 0) return pool[i];
+            }
+            return pool[pool.length - 1];
+        }
+
+        function buildQueue(lesson) {
+            const known = Array.from(new Set(knownNow().concat(lesson.news))).filter(l => MORSE[l]);
+            const level = lesson.level || 1;
+            const plan = lessonPlan(lesson);
+            const queue = [];
+            const used = {};
+
+            const mark = q => {
+                const key = q.type + q.letter;
+                if (used[key]) return false;
+                used[key] = true;
+                return true;
+            };
+
+            lesson.news.forEach(l => queue.push({ type: 'learn', letter: l }));
+
+            // 每个新字母：五种题型各做一遍，整体按题型由易到难推进
+            TYPE_ORDER.forEach(t => {
+                lesson.news.forEach(l => {
+                    const q = makeQ(t, l, known);
+                    if (mark(q)) queue.push(q);
+                });
+            });
+
+            // 复习题：老字母按错题权重抽取，同样由易到难排
+            const review = [];
+            const others = known.filter(l => lesson.news.indexOf(l) < 0);
+            const pool = others.length ? others : known;
+            // 复习阶段同样覆盖全部题型，后面更偏听辨与默写
+            const table = level >= 3
+                ? ['morse', 'sound', 'sound', 'build', 'type']
+                : ['shape', 'morse', 'sound', 'build', 'type'];
+            for (let i = 0; i < plan.review; i++) {
+                const l = pickWeighted(pool);
+                if (!l) break;
+                let t = pick(table);
+                let guard = 0;
+                while (used[t + l] && guard++ < 10) t = pick(table);
+                const q = makeQ(t, l, known);
+                used[q.type + q.letter] = true;
+                review.push(q);
+            }
+            review.sort((a, b) => TYPE_RANK[a.type] - TYPE_RANK[b.type]);
+
+            return queue.concat(review);
+        }
+
+        function lpStartNext() {
+            const l = firstIncomplete();
+            if (l) lpStartLesson(l.id);
+            else go('chart');
+        }
+
+        function lpStartLesson(id) {
+            const lesson = ALL.find(l => l.id === id);
+            if (!lesson) return;
+            session = {
+                mode: 'lesson',
+                lesson: lesson,
+                queue: buildQueue(lesson),
+                i: 0,
+                hearts: 5,
+                correct: 0,
+                wrong: 0,
+                start: Date.now(),
+                phase: 'answer',
+                answer: null,
+                drill: false
+            };
+            openLessonShell();
+        }
+
+        function startDrill(kind) {
+            const known = knownNow();
+            const pool = known.length >= 4 ? known : ['E', 'T', 'A', 'N', 'S', 'M'];
+            const queue = [];
+            for (let i = 0; i < 10; i++) {
+                const t = kind === 'mix' ? pick(['shape', 'morse', 'sound', 'build', 'type']) : kind;
+                queue.push(makeQ(t, pickWeighted(pool), pool));
+            }
+            session = {
+                mode: 'drill',
+                drill: true,
+                kind: kind,
+                queue: queue,
+                i: 0,
+                hearts: 5,
+                correct: 0,
+                wrong: 0,
+                start: Date.now(),
+                phase: 'answer',
+                answer: null
+            };
+            openLessonShell();
+        }
+
+        function openLessonShell() {
+            const el = $('#lesson');
+            el.classList.remove('hidden');
+            el.innerHTML = `
+              <div class="lesson-top">
+                <button class="close-x" id="lessonClose">${ICON.x}</button>
+                <div class="bar"><i id="lessonBar"></i></div>
+                <div class="l-hearts" id="lessonHearts"></div>
+              </div>
+              <div class="lesson-body" id="lessonBody"></div>
+              <div class="lesson-foot" id="lessonFoot"></div>`;
+            $('#lessonClose').addEventListener('click', () => {
+                if (session && (session.correct + session.wrong) > 0) lpExitConfirm();
+                else lpExit();
+            });
+            $('#lessonBody').addEventListener('click', onLessonClick);
+            $('#lessonBody').addEventListener('input', onLessonInput);
+            renderExercise();
+        }
+
+        function currentEx() {
+            return session ? session.queue[session.i] : null;
+        }
+
+        function renderExercise() {
+            if (!session) return;
+            if (session.i >= session.queue.length) { finishSession(); return; }
+            const ex = currentEx();
+            session.phase = 'answer';
+            session.answer = null;
+            const body = $('#lessonBody');
+            const foot = $('#lessonFoot');
+            clearTimeout(glyphTimer);
+            glyphTimer = null;
+            foot.className = 'lesson-foot';
+            updateHearts();
+            updateBar();
+
+            if (ex.type === 'learn') {
+                body.innerHTML = `<div class="qwrap learn-wrap">
+                  <div class="kicker">新字母</div>
+                  <div class="learn-card">${glyphHTML(ex.letter, { watermark: true })}</div>
+                  <div class="learn-meta">
+                    <div class="lm-letter">${ex.letter}</div>
+                    <div class="lm-sep"></div>
+                    <div class="lm-morse">${morseSymbols(ex.letter)}</div>
+                  </div>
+                  <p class="learn-hint">${HINTS[ex.letter] || ''}</p>
+                  <button class="play-inline" data-playglyph>${ICON.play} 听一遍</button>
+                </div>`;
+                foot.innerHTML = `<div class="inner"><button class="btn primary big" id="mainBtn" onclick="lpNext()">继续</button></div>`;
+                setTimeout(() => { if (session && currentEx() === ex) playGlyphAnim(3); }, 420);
+                return;
+            }
+
+            if (ex.type === 'shape') {
+                body.innerHTML = `<div class="qwrap">
+                  <h2 class="prompt">这个图形是哪个字母？<small>点划拼出的形状，就是字母本身。</small></h2>
+                  <div class="glyph-card shape-card">${glyphHTML(ex.letter)}</div>
+                  <div style="text-align:center;margin-top:12px">
+                    <button class="play-inline" data-playglyph>${ICON.play} 听一遍</button>
+                  </div>
+                  ${optionsHTML(ex)}
+                </div>`;
+                // 进场先把点划闪两遍，同时放出电码声
+                setTimeout(() => { if (session && currentEx() === ex) playGlyphAnim(2, 420); }, 460);
+            } else if (ex.type === 'morse') {
+                body.innerHTML = `<div class="qwrap">
+                  <h2 class="prompt">这段电码是哪个字母？</h2>
+                  <div class="code-box">${morseSymbols(ex.letter, true)}</div>
+                  <div style="text-align:center;margin-top:12px">
+                    <button class="play-inline" data-playglyph>${ICON.play} 听一遍</button>
+                  </div>
+                  ${optionsHTML(ex)}
+                </div>`;
+                setTimeout(() => { if (session && currentEx() === ex) playGlyphAnim(2, 420); }, 700);
+            } else if (ex.type === 'sound') {
+                body.innerHTML = `<div class="qwrap">
+                  <h2 class="prompt">听声音，这是哪个字母？<small>嘀是点，哒是划。</small></h2>
+                  <div class="sound-box">
+                    <button class="sound-btn" data-replay>${ICON.speaker}</button>
+                    <div class="wave" id="wave">${'<i></i>'.repeat(7)}</div>
+                    <div class="sound-hint">点按重听</div>
+                  </div>
+                  ${optionsHTML(ex)}
+                </div>`;
+                setTimeout(() => { if (session && currentEx() === ex) replaySound(); }, 420);
+            } else if (ex.type === 'build') {
+                body.innerHTML = `<div class="qwrap">
+                  <h2 class="prompt">拼出这个字母的电码<small>按顺序点出 ${MORSE[ex.letter].length} 个符号。</small></h2>
+                  <div class="build-stage">
+                    <div class="build-letter">${ex.letter}</div>
+                    <div class="slots" id="slots">${slotsHTML(ex)}</div>
+                    <div class="keys">
+                      <button class="key" data-key="."><span class="sym dot"></span><em>点</em></button>
+                      <button class="key" data-key="-"><span class="sym dash"></span><em>划</em></button>
+                      <button class="key del" data-del disabled>${ICON.back}</button>
+                    </div>
+                  </div>
+                </div>`;
+            } else if (ex.type === 'type') {
+                body.innerHTML = `<div class="qwrap">
+                  <h2 class="prompt">这个图形是哪个字母？<small>在下面的键盘上点出答案。</small></h2>
+                  <div class="glyph-card shape-card">${glyphHTML(ex.letter)}</div>
+                  <div class="letter-keys">
+                    ${KEY_ROWS.map(row => `<div class="letter-row">${Array.from(row).map(l => `<button class="letter-key" data-letter="${l}">${l}</button>`).join('')}</div>`).join('')}
+                  </div>
+                </div>`;
+                setTimeout(() => { if (session && currentEx() === ex) playGlyphAnim(2, 420); }, 460);
+            }
+
+            foot.innerHTML = `<div class="inner"><button class="btn primary big" id="mainBtn" onclick="lpMain()" disabled>检查</button></div>`;
+        }
+
+        function optionsHTML(ex) {
+            return `<div class="options">
+              ${ex.options.map(l => `<button class="opt" data-opt="${l}">
+                <span class="ol">${l}</span>
+              </button>`).join('')}
+            </div>`;
+        }
+
+        function slotsHTML(ex) {
+            const need = MORSE[ex.letter].length;
+            const ans = session.answer || '';
+            let h = '';
+            for (let i = 0; i < need; i++) {
+                const c = ans[i];
+                let cls = 'slot';
+                if (c) cls += ' filled';
+                else if (i === ans.length) cls += ' next';
+                h += `<div class="${cls}">${c ? `<span class="sym ${c === '.' ? 'dot' : 'dash'}"></span>` : ''}</div>`;
+            }
+            return h;
+        }
+
+        // 拼码界面：槽位 / 退格键 / 检查按钮三者状态一起刷新
+        function updateBuildUI(ex) {
+            const slots = $('#slots');
+            if (slots) slots.innerHTML = slotsHTML(ex);
+            const del = $('[data-del]');
+            if (del) del.disabled = !(session.answer || '');
+            const b = $('#mainBtn');
+            if (b) b.disabled = (session.answer || '').length < MORSE[ex.letter].length;
+        }
+
+        function updateBar() {
+            const bar = $('#lessonBar');
+            if (!bar || !session) return;
+            const pct = Math.round((session.i / Math.max(1, session.queue.length)) * 100);
+            bar.style.width = pct + '%';
+        }
+
+        function updateHearts() {
+            const el = $('#lessonHearts');
+            if (!el || !session) return;
+            if (session.drill) {
+                el.innerHTML = `<span style="font-size:14px;font-weight:900;color:var(--green)">✓ ${session.correct}</span>`;
+                return;
+            }
+            let h = '';
+            for (let i = 0; i < 5; i++) {
+                const on = i < session.hearts;
+                h += `<svg viewBox="0 0 24 24"><path d="M12 20.5S4 15.8 4 10.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6c0 5.2-8 9.9-8 9.9Z" fill="${on ? '#FF4B4B' : '#E5E5E5'}"/></svg>`;
+            }
+            el.innerHTML = h;
+        }
+
+        function selectOption(l) {
+            if (!session || session.phase !== 'answer') return;
+            session.answer = l;
+            Sound.tap();
+            $$('.opt').forEach(o => o.classList.toggle('sel', o.dataset.opt === l));
+            const b = $('#mainBtn');
+            if (b) b.disabled = false;
+        }
+
+        function pickLetter(l) {
+            if (!session || session.phase !== 'answer') return;
+            session.answer = l;
+            Sound.tap();
+            $$('.letter-key').forEach(k => k.classList.toggle('sel', k.dataset.letter === l));
+            const b = $('#mainBtn');
+            if (b) b.disabled = false;
+        }
+
+        function tapKey(k) {
+            if (!session || session.phase !== 'answer') return;
+            const ex = currentEx();
+            if (!ex) return;
+            const need = MORSE[ex.letter].length;
+            if ((session.answer || '').length >= need) return;
+            session.answer = (session.answer || '') + k;
+            Sound.morse(k);
+            updateBuildUI(ex);
+        }
+
+        function delKey() {
+            if (!session || session.phase !== 'answer') return;
+            const ex = currentEx();
+            session.answer = (session.answer || '').slice(0, -1);
+            updateBuildUI(ex);
+            Sound.tap();
+        }
+
+        function onLessonClick(e) {
+            const opt = e.target.closest('[data-opt]');
+            if (opt) { selectOption(opt.dataset.opt); return; }
+            const lk = e.target.closest('[data-letter]');
+            if (lk) { pickLetter(lk.dataset.letter); return; }
+            const key = e.target.closest('[data-key]');
+            if (key) { tapKey(key.dataset.key); return; }
+            if (e.target.closest('[data-del]')) { delKey(); return; }
+            if (e.target.closest('[data-replay]')) { replaySound(); return; }
+            if (e.target.closest('[data-playglyph]')) { playGlyphAnim(); return; }
+        }
+
+        function onLessonInput(e) {
+            if (e.target.id !== 'typeInput') return;
+            let v = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+            e.target.value = v;
+            session.answer = v;
+            const b = $('#mainBtn');
+            if (b) b.disabled = !v;
+        }
+
+        function replaySound() {
+            const ex = currentEx();
+            if (!ex) return;
+            const wave = $('#wave');
+            if (wave) {
+                wave.classList.add('on');
+                setTimeout(() => wave.classList.remove('on'), Math.max(700, MORSE[ex.letter].length * 360));
+            }
+            Sound.morse(MORSE[ex.letter]);
+        }
+
+        // times：循环播放几遍（新字母卡默认 3 遍）
+        function playGlyphAnim(times, hold) {
+            const ex = currentEx();
+            if (!ex) return;
+            // 图形题点亮字形，读码题点亮电码框
+            let parts = Array.from(document.querySelectorAll('#lessonBody .glyph .part'));
+            if (!parts.length) parts = Array.from(document.querySelectorAll('#lessonBody .code-box .sym'));
+            if (!parts.length) return;
+            const code = MORSE[ex.letter];
+            const litFor = hold || 240;
+            const gap = Sound.morseLength(code) + 620;
+            const rounds = times || 1;
+            let round = 0;
+
+            clearTimeout(glyphTimer);
+            const run = () => {
+                if (!session || currentEx() !== ex) return;
+                parts.forEach(p => p.classList.remove('lit'));
+                let prev = null;
+                Sound.morse(code, (i) => {
+                    const p = parts[i];
+                    if (prev) prev.classList.remove('lit');   // 只在当前这个符号上亮，形成走位
+                    if (!p) return;
+                    prev = p;
+                    p.classList.add('lit');
+                    setTimeout(() => p.classList.remove('lit'), litFor);
+                });
+                round++;
+                if (round < rounds) glyphTimer = setTimeout(run, gap + litFor);
+            };
+            run();
+        }
+
+        function lpMain() {
+            if (!session) return;
+            const ex = currentEx();
+            if (!ex) return;
+            if (ex.type === 'learn') { lpNext(); return; }
+            if (!session.answer) return;
+            checkAnswer();
+        }
+
+        function checkAnswer() {
+            clearTimeout(glyphTimer);
+            glyphTimer = null;
+            const ex = currentEx();
+            let ok = false;
+            if (ex.type === 'build') ok = (session.answer || '') === MORSE[ex.letter];
+            else if (ex.type === 'type') ok = (session.answer || '').toUpperCase() === ex.letter;
+            else ok = session.answer === ex.letter;
+
+            session.phase = 'feedback';
+
+            $$('.opt').forEach(o => {
+                if (o.dataset.opt === ex.letter) o.classList.add('ok');
+                else if (o.classList.contains('sel')) o.classList.add('bad');
+            });
+
+            if (ex.type === 'build') {
+                $$('.slot').forEach((s, i) => {
+                    const c = (session.answer || '')[i];
+                    s.classList.add(ok ? 'ok' : 'bad');
+                });
+            }
+
+            if (ok) {
+                session.correct++;
+                if (S.miss[ex.letter]) S.miss[ex.letter] = Math.max(0, S.miss[ex.letter] - 0.34);
+                Sound.correct();
+            } else {
+                session.wrong++;
+                S.miss[ex.letter] = (S.miss[ex.letter] || 0) + 1;
+                saveState();
+                Sound.wrong();
+                if (!session.drill) session.hearts--;
+                if (!ex.repeated && session.queue.length < 42) {
+                    session.queue.push(Object.assign({}, ex, { repeated: true }));
+                }
+            }
+
+            updateHearts();
+            renderFeedback(ok);
+        }
+
+        function renderFeedback(ok) {
+            const ex = currentEx();
+            const foot = $('#lessonFoot');
+
+            if (ok) {
+                // 答对：底部的绿色轻提示
+                foot.className = 'lesson-foot ok';
+                foot.innerHTML = `<div class="inner">
+                  <div class="fb">
+                    <div class="fb-icon">✓</div>
+                    <div style="min-width:0">
+                      <div class="fb-title">${pick(['漂亮！', '答对了！', '就是这个！', '稳稳的！'])}</div>
+                      <div class="fb-sub">${ex.letter} = ${pretty(MORSE[ex.letter])}</div>
+                    </div>
+                  </div>
+                  <button class="btn green big" id="mainBtn" onclick="lpNext()">继续</button>
+                </div>`;
+                return;
+            }
+
+            // 答错：底部只留按钮，答案卡片落在选项下方
+            foot.className = 'lesson-foot';
+            foot.innerHTML = `<div class="inner"><button class="btn red big" id="mainBtn" onclick="lpNext()">继续</button></div>`;
+
+            const wrap = $('#lessonBody .qwrap');
+            if (wrap) {
+                wrap.insertAdjacentHTML('beforeend', `<div class="q-feedback">
+                    <div class="qf-glyph">${glyphHTML(ex.letter, { watermark: true })}</div>
+                    <div class="qf-info">
+                      <div class="qf-title"><i>✕</i>再记一遍</div>
+                      <div class="qf-answer">
+                        <span class="qf-letter">${ex.letter}</span>
+                        <span class="qf-morse">${morseSymbols(ex.letter)}</span>
+                      </div>
+                    </div>
+                    <button class="qf-play" onclick="lpPlayFeedback('${ex.letter}', this)" aria-label="重听 ${ex.letter} 的电码">${ICON.speaker}</button>
+                  </div>`);
+            }
+
+            const body = $('#lessonBody');
+            if (body) setTimeout(() => body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' }), 80);
+
+            clearTimeout(fbTimer);
+            fbTimer = setTimeout(() => {
+                if (session && session.phase === 'feedback') lpPlayFeedback(ex.letter, $('.q-feedback'), 3);
+            }, 430);
+        }
+
+        // 播放正确答案：声音 + 字形逐笔点亮；times 控制循环遍数（自动播放 3 遍）
+        function lpPlayFeedback(letter, el, times) {
+            clearTimeout(fbTimer);
+            fbTimer = null;
+            const scope = (el && el.closest) ? (el.closest('.q-feedback') || el) : $('.q-feedback');
+            const parts = scope ? Array.from(scope.querySelectorAll('.part')) : [];
+            const code = MORSE[letter];
+            const litFor = 300;
+            const gap = Sound.morseLength(code) + 520;
+            const rounds = times || 1;
+            let round = 0;
+
+            const run = () => {
+                if (!session || session.phase !== 'feedback') return;
+                parts.forEach(p => p.classList.remove('lit'));
+                let prev = null;
+                Sound.morse(code, (i) => {
+                    if (prev) prev.classList.remove('lit');
+                    const p = parts[i];
+                    if (!p) return;
+                    prev = p;
+                    p.classList.add('lit');
+                    setTimeout(() => p.classList.remove('lit'), litFor);
+                });
+                round++;
+                if (round < rounds) fbTimer = setTimeout(run, gap + litFor);
+            };
+            run();
+        }
+
+        function lpNext() {
+            if (!session) return;
+            clearTimeout(fbTimer);
+            fbTimer = null;
+            session.i++;
+            if (!session.drill && session.hearts <= 0) { showFail(); return; }
+            if (session.i >= session.queue.length) { finishSession(); return; }
+            renderExercise();
+        }
+
+        function finishSession() {
+            const total = session.correct + session.wrong;
+            const acc = total ? Math.round((session.correct / total) * 100) : 100;
+            let xp;
+            if (session.mode === 'drill') {
+                xp = Math.max(1, Math.round(session.correct * 0.8));
+            } else {
+                // 课越长，XP 越多，但增长略低于题量
+                xp = Math.round(7 + total * 0.9) + (acc >= 90 ? 3 : 0) + (session.lesson.review ? 1 : 0);
+            }
+
+            S.xp += xp;
+            S.todayXp += xp;
+
+            if (session.mode === 'lesson') {
+                S.done[session.lesson.id] = { date: todayKey(), acc: acc };
+                const t = todayKey();
+                if (S.lastDay !== t) {
+                    S.streak = (S.lastDay === dayKey(-1)) ? S.streak + 1 : 1;
+                    S.lastDay = t;
+                }
+            }
+            saveState();
+            updateTop();
+
+            const secs = Math.max(1, Math.round((Date.now() - session.start) / 1000));
+            const isDrill = session.mode === 'drill';
+            const title = isDrill ? '练习完成！' : '课程完成！';
+            const sub = isDrill
+                ? `答对 ${session.correct} / ${total} 题，手感正热。`
+                : (acc === 100 ? '全对！这一课的点划已经刻进脑子里了。' : '又点亮了几个字母，继续保持。');
+
+            $('#lesson').innerHTML = `<div class="done-screen">
+              ${mascot(152, acc >= 60 ? 'happy' : 'sad')}
+              <div class="done-h">${title}</div>
+              <div class="done-p">${sub}</div>
+              <div class="done-stats">
+                <div class="ds gold"><span>XP</span><b>+${xp}</b></div>
+                <div class="ds green"><span>正确率</span><b>${acc}%</b></div>
+                <div class="ds blue"><span>用时</span><b>${fmtTime(secs)}</b></div>
+              </div>
+              <div class="done-actions">
+                <button class="btn primary big" onclick="lpExit()">继续</button>
+                <button class="btn ghost big" onclick="lpAgain()">再来一次</button>
+              </div>
+            </div>`;
+            confetti();
+        }
+
+        function showFail() {
+            $('#lesson').innerHTML = `<div class="done-screen">
+              ${mascot(152, 'sad')}
+              <div class="done-h">爱心用完了</div>
+              <div class="done-p">别急，这一课的字母已经认识了，再来一次就好。</div>
+              <div class="done-actions">
+                <button class="btn primary big" onclick="lpAgain()">重新开始本课</button>
+                <button class="btn ghost big" onclick="lpExit()">返回学习路径</button>
+              </div>
+            </div>`;
+        }
+
+        function lpAgain() {
+            if (!session) return;
+            if (session.mode === 'drill') startDrill(session.kind);
+            else lpStartLesson(session.lesson.id);
+        }
+
+        function lpExit() {
+            clearTimeout(fbTimer);
+            clearTimeout(glyphTimer);
+            fbTimer = null;
+            glyphTimer = null;
+            const el = $('#lesson');
+            el.classList.add('hidden');
+            el.innerHTML = '';
+            session = null;
+            go(currentView);
+        }
+
+        function lpExitConfirm() {
+            openModal(`
+              <div class="sheet-head">
+                <div class="sheet-title">退出本课？</div>
+                <button class="sheet-close" onclick="lpCloseModal()">${ICON.x}</button>
+              </div>
+              <div class="confirm-txt">这一课的进度不会保存，已答对的题目也会作废。</div>
+              <div class="confirm-actions">
+                <button class="btn ghost" onclick="lpCloseModal()">继续上课</button>
+                <button class="btn red" onclick="lpCloseModal();lpExit()">退出</button>
+              </div>`);
+        }
+
+        function confetti() {
+            const colors = ['#58CC02', '#1CB0F6', '#FFC800', '#FF9600', '#CE82FF', '#FF4B4B'];
+            const wrap = document.createElement('div');
+            wrap.className = 'confetti';
+            for (let i = 0; i < 30; i++) {
+                const s = document.createElement('i');
+                s.style.left = (Math.random() * 100) + '%';
+                s.style.background = pick(colors);
+                s.style.animationDelay = (Math.random() * 0.7) + 's';
+                s.style.animationDuration = (1.5 + Math.random() * 1.3) + 's';
+                s.style.opacity = 0.9;
+                wrap.appendChild(s);
+            }
+            $('#lesson').appendChild(wrap);
+            setTimeout(() => wrap.remove(), 3600);
+        }
+
+        /* ============================================================
+           13. 事件绑定
+           ============================================================ */
+        function bindGlobal() {
+            document.addEventListener('click', e => {
+                const nav = e.target.closest('[data-view]');
+                if (nav) { go(nav.dataset.view); return; }
+            });
+
+            const practice = $('#viewPractice');
+            practice.addEventListener('click', e => {
+                const d = e.target.closest('[data-drill]');
+                if (d) { startDrill(d.dataset.drill); return; }
+                const tm = e.target.closest('[data-tmode]');
+                if (tm) {
+                    transMode = tm.dataset.tmode;
+                    renderPractice();
+                    return;
+                }
+                if (e.target.closest('[data-tplay]')) {
+                    if (!transText.trim()) return;
+                    if (transMode === 'enc') playCodeString(textToMorse(transText));
+                    else playCodeString(transText);
+                    return;
+                }
+                if (e.target.closest('[data-tcopy]')) {
+                    const txt = transOutText || ($('#transOut') ? $('#transOut').textContent : '');
+                    if (txt && navigator.clipboard) {
+                        navigator.clipboard.writeText(txt);
+                        const btn = e.target.closest('[data-tcopy]');
+                        const old = btn.textContent;
+                        btn.textContent = '已复制';
+                        setTimeout(() => { btn.textContent = old; }, 1400);
+                    }
+                }
+            });
+            practice.addEventListener('input', e => {
+                if (e.target.id === 'transIn') {
+                    transText = e.target.value;
+                    updateTransOut();
+                }
+            });
+
+            const me = $('#viewMe');
+            me.addEventListener('click', e => {
+                if (e.target.closest('#unlockSwitch')) {
+                    S.unlockAll = !S.unlockAll;
+                    saveState();
+                    renderMe();
+                    return;
+                }
+                if (e.target.closest('#soundSwitch')) {
+                    S.muted = !S.muted;
+                    saveState();
+                    updateTop();
+                    renderMe();
+                }
+            });
+
+            $('#muteBtn').addEventListener('click', () => {
+                S.muted = !S.muted;
+                saveState();
+                updateTop();
+                if (!S.muted) Sound.pop();
+            });
+
+            $('#modal').addEventListener('click', e => {
+                if (e.target.id === 'modal') closeModal();
+            });
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') {
+                    if (!$('#modal').classList.contains('hidden')) { closeModal(); return; }
+                    if (session) { if ((session.correct + session.wrong) > 0) lpExitConfirm(); else lpExit(); }
+                    return;
+                }
+                if (!session) return;
+                const tag = (e.target.tagName || '').toLowerCase();
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (session.phase === 'feedback') lpNext();
+                    else lpMain();
+                    return;
+                }
+                if (session.phase === 'answer' && tag !== 'input') {
+                    const exs = currentEx();
+                    if (exs && exs.type === 'type' && /^[a-zA-Z]$/.test(e.key)) {
+                        pickLetter(e.key.toUpperCase());
+                        return;
+                    }
+                    const n = parseInt(e.key, 10);
+                    if (n >= 1 && n <= 4) {
+                        const opts = $$('.opt');
+                        if (opts[n - 1]) selectOption(opts[n - 1].dataset.opt);
+                    }
+                }
+            });
+
+            document.addEventListener('pointerdown', () => Sound.ensure(), { once: true });
+        }
+
+        /* ============================================================
+           14. 启动
+           ============================================================ */
+        function init() {
+            UNITS.forEach((u, ui) => {
+                u.lessons.forEach((l, li) => {
+                    l.id = u.id + '-' + (li + 1);
+                    l.unit = u;
+                    l.level = u.level;
+                    l.index = li;
+                });
+            });
+            ALL = UNITS.reduce((acc, u) => acc.concat(u.lessons), []);
+            bindGlobal();
+            updateTop();
+            go('home');
+        }
+
+        init();
+    </script>
 </body>
+
 </html>
